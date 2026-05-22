@@ -23,58 +23,47 @@
 
   <!-- Categorias -->
   <div class="flex gap-2 flex-wrap mb-6">
-    <a href="?" class="bg-[#29AADF] text-white text-sm px-4 py-2 rounded-full">Todos</a>
+    <button
+      hx-get="/"
+      hx-target="#lista-produtos"
+      hx-swap="innerHTML"
+      onclick="setAtivo(this)"
+      class="cat-btn bg-[#29AADF] text-white text-sm px-4 py-2 rounded-full">
+      Todos
+    </button>
     {% for categoria in categorias %}
-    <a href="?categoria={{ categoria.slug }}" class="border border-[#29AADF] text-[#1A3FAA] text-sm px-4 py-2 rounded-full hover:bg-[#29AADF] hover:text-white transition">
+    <button
+      hx-get="/?categoria={{ categoria.slug }}"
+      hx-target="#lista-produtos"
+      hx-swap="innerHTML"
+      onclick="setAtivo(this)"
+      class="cat-btn border border-[#29AADF] text-[#1A3FAA] text-sm px-4 py-2 rounded-full hover:bg-[#29AADF] hover:text-white transition">
       {{ categoria.icone }} {{ categoria.nome }}
-    </a>
+    </button>
     {% endfor %}
   </div>
 
-  <!-- Destaques -->
-  {% if destaques %}
-  <h2 class="text-lg font-semibold mb-4 text-gray-700">⭐ Mais vendidos</h2>
-  <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-10">
-    {% for produto in destaques %}
-    <div class="bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition p-4">
-      {% if produto.foto %}
-      <img src="{{ produto.foto.url }}" alt="{{ produto.nome }}" class="w-full h-32 object-contain mb-3">
-      {% else %}
-      <div class="w-full h-32 bg-blue-50 rounded-lg flex items-center justify-center text-4xl mb-3">
-        {{ produto.categoria.icone }}
-      </div>
-      {% endif %}
-      <p class="text-sm font-medium text-gray-800">{{ produto.nome }}</p>
-      <p class="text-xs text-gray-400 mb-2">{{ produto.descricao }}</p>
-      <p class="text-[#1A3FAA] font-semibold">R$ {{ produto.preco }}</p>
-    </div>
-    {% endfor %}
-  </div>
-  {% endif %}
-
-  <!-- Todos os produtos -->
-  <h2 class="text-lg font-semibold mb-4 text-gray-700">🛒 Todos os produtos</h2>
-  <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-    {% for produto in produtos %}
-    <div class="bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition p-4">
-      {% if produto.foto %}
-      <img src="{{ produto.foto.url }}" alt="{{ produto.nome }}" class="w-full h-32 object-contain mb-3">
-      {% else %}
-      <div class="w-full h-32 bg-blue-50 rounded-lg flex items-center justify-center text-4xl mb-3">
-        {{ produto.categoria.icone }}
-      </div>
-      {% endif %}
-      <p class="text-sm font-medium text-gray-800">{{ produto.nome }}</p>
-      <p class="text-xs text-gray-400 mb-2">{{ produto.descricao }}</p>
-      <div class="flex items-center justify-between mt-2">
-        <p class="text-[#1A3FAA] font-semibold">R$ {{ produto.preco }}</p>
-        <button class="bg-[#29AADF] text-white text-xs px-3 py-1.5 rounded-lg hover:bg-[#1A3FAA] transition">
-          + Carrinho
-        </button>
-      </div>
-    </div>
-    {% endfor %}
+  <!-- Lista de produtos -->
+  <h2 class="text-lg font-semibold mb-4 text-gray-700">🛒 Produtos</h2>
+  <div id="lista-produtos">
+    {% include 'produtos/partials/lista_produtos.html' %}
   </div>
 
 </div>
+
+{% block extra_js %}
+<script>
+  function setAtivo(btn) {
+    // Remove estilo ativo de todos os botões
+    document.querySelectorAll('.cat-btn').forEach(b => {
+      b.classList.remove('bg-[#29AADF]', 'text-white');
+      b.classList.add('border', 'border-[#29AADF]', 'text-[#1A3FAA]');
+    });
+    // Aplica estilo ativo no botão clicado
+    btn.classList.add('bg-[#29AADF]', 'text-white');
+    btn.classList.remove('border', 'border-[#29AADF]', 'text-[#1A3FAA]');
+  }
+</script>
+{% endblock %}
+
 {% endblock %}
