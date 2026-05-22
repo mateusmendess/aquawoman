@@ -1,0 +1,61 @@
+{% load static %}
+
+{% for item in carrinho %}
+<div class="flex items-center gap-4 p-4 border-b border-gray-50 last:border-0">
+  <div class="w-16 h-16 bg-blue-50 rounded-xl flex items-center justify-center text-3xl flex-shrink-0">
+    {{ item.produto.categoria.icone }}
+  </div>
+  <div class="flex-1">
+    <p class="text-sm font-medium text-gray-800">{{ item.produto.nome }}</p>
+    <p class="text-xs text-gray-400">{{ item.produto.descricao }}</p>
+    <p class="text-xs text-[#1A3FAA] font-medium mt-1">R$ {{ item.preco }} cada</p>
+  </div>
+  <div class="flex flex-col items-end gap-2">
+    <div class="flex items-center gap-2">
+      <button
+        hx-post="{% url 'pedidos:carrinho_atualizar' item.produto.id %}"
+        hx-vals='{"quantidade": {{ item.quantidade|add:"-1" }}}'
+        hx-target="#itens-carrinho"
+        hx-swap="innerHTML"
+        hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+        class="w-7 h-7 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-600 font-bold transition flex items-center justify-center">
+        −
+      </button>
+      <span class="text-sm font-semibold w-6 text-center">{{ item.quantidade }}</span>
+      <button
+        hx-post="{% url 'pedidos:carrinho_atualizar' item.produto.id %}"
+        hx-vals='{"quantidade": {{ item.quantidade|add:"1" }}}'
+        hx-target="#itens-carrinho"
+        hx-swap="innerHTML"
+        hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+        class="w-7 h-7 rounded-lg bg-[#29AADF] hover:bg-[#1A3FAA] text-white font-bold transition flex items-center justify-center">
+        +
+      </button>
+    </div>
+    <p class="text-sm font-semibold text-[#1A3FAA]">R$ {{ item.subtotal }}</p>
+    <button
+      hx-post="{% url 'pedidos:carrinho_atualizar' item.produto.id %}"
+      hx-vals='{"quantidade": 0}'
+      hx-target="#itens-carrinho"
+      hx-swap="innerHTML"
+      hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+      class="text-xs text-red-400 hover:text-red-600 transition">
+      Remover
+    </button>
+  </div>
+</div>
+{% empty %}
+<div class="p-12 text-center">
+  <p class="text-5xl mb-4">🛒</p>
+  <p class="text-gray-500 text-sm mb-4">Seu carrinho está vazio.</p>
+  <a href="/" class="bg-[#29AADF] text-white text-sm px-6 py-2 rounded-lg inline-block hover:bg-[#1A3FAA] transition">
+    Ver produtos
+  </a>
+</div>
+{% endfor %}
+
+<!-- Total atualizado pelo HTMX -->
+<div class="border-t border-gray-100 p-4 flex justify-between items-center">
+  <span class="text-sm text-gray-600">Total</span>
+  <span class="text-lg font-bold text-[#1A3FAA]">R$ {{ total }}</span>
+</div>

@@ -20,7 +20,12 @@
     <p class="text-xs text-gray-400 mb-2">{{ produto.descricao }}</p>
     <div class="flex items-center justify-between mt-2">
       <p class="text-[#1A3FAA] font-semibold">R$ {{ produto.preco }}</p>
-      <button class="bg-[#29AADF] text-white text-xs px-3 py-1.5 rounded-lg hover:bg-[#1A3FAA] transition">
+      <button
+        hx-post="{% url 'pedidos:carrinho_adicionar' produto.id %}"
+        hx-target="#carrinho-contador"
+        hx-swap="outerHTML"
+        hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+        class="bg-[#29AADF] text-white text-xs px-3 py-1.5 rounded-lg hover:bg-[#1A3FAA] transition">
         + Carrinho
       </button>
     </div>
