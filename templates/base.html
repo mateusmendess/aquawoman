@@ -47,13 +47,15 @@
 
       <!-- Links -->
       <div class="flex items-center gap-6">
-        <a href="/produtos" class="text-white text-sm opacity-90 hover:opacity-100">Produtos</a>
-        <a href="/pedidos" class="text-white text-sm opacity-90 hover:opacity-100">Meus Pedidos</a>
+        <a href="/" class="text-white text-sm opacity-90 hover:opacity-100">Produtos</a>
+        <a href="/carrinho" class="text-white text-sm opacity-90 hover:opacity-100">Meus Pedidos</a>
 
         <!-- Carrinho -->
         <a href="/carrinho" class="bg-[#1A3FAA] text-white text-sm px-4 py-2 rounded-lg flex items-center gap-2 relative hover:bg-blue-900 transition">
           <i class="ti ti-shopping-cart text-base"></i> Carrinho
-          <span id="carrinho-contador" class="absolute -top-2 -right-2 bg-white text-[#1A3FAA] text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">0</span>
+          <span id="carrinho-contador" class="absolute -top-2 -right-2 bg-white text-[#1A3FAA] text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">
+            {{ quantidade_carrinho|default:0 }}
+          </span>
         </a>
       </div>
 
@@ -91,6 +93,14 @@
       <span class="text-[#9FE1CB] text-xs">© 2026 Aquawoman · Limpeza e Descartáveis</span>
     </div>
   </footer>
+
+  <!-- Toast de confirmação -->
+  <div id="toast"
+       class="fixed bottom-6 right-6 bg-[#1A3FAA] text-white text-sm px-5 py-3 rounded-xl shadow-lg hidden items-center gap-2 z-50">
+    ✅ Produto adicionado ao carrinho!
+  </div>
+
+  <script src="{% static 'js/main.js' %}"></script>
 
   {% block extra_js %}{% endblock %}
 </body>
