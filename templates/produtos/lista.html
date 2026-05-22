@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block title %}Produtos — Aquawoman{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto px-4 py-8">
+
+  <!-- Hero -->
+  <div class="bg-gradient-to-r from-[#1A3FAA] to-[#29AADF] rounded-2xl p-8 mb-8 text-white">
+    <p class="text-sm opacity-80 mb-1">✦ Aquawoman — a gente vai além.</p>
+    <h1 class="text-2xl font-semibold mb-2">Qualidade em limpeza<br>e descartáveis</h1>
+    <p class="text-sm opacity-75 mb-4">Soluções completas para casa e empresas · Fazemos entregas</p>
+    <button class="bg-white text-[#1A3FAA] font-semibold text-sm px-5 py-2 rounded-lg">
+      Ver catálogo completo
+    </button>
+    <div class="flex gap-3 mt-4 flex-wrap">
+      <span class="bg-white/20 text-white text-xs px-3 py-1 rounded-full border border-white/25">🚚 Fazemos entregas</span>
+      <span class="bg-white/20 text-white text-xs px-3 py-1 rounded-full border border-white/25">💳 Pix e cartão</span>
+      <span class="bg-white/20 text-white text-xs px-3 py-1 rounded-full border border-white/25">⭐ Qualidade garantida</span>
+    </div>
+  </div>
+
+  <!-- Produtos (placeholder) -->
+  <h2 class="text-lg font-semibold mb-4 text-gray-700">Mais vendidos</h2>
+  <div class="grid grid-cols-3 gap-4">
+    <div class="bg-white rounded-xl border border-gray-100 p-4 text-center">
+      <div class="text-4xl mb-2">🧴</div>
+      <p class="text-sm font-medium">Limpador Multiuso</p>
+      <p class="text-xs text-gray-400 mb-2">5 litros</p>
+      <p class="text-[#1A3FAA] font-semibold">R$ 18,90</p>
+    </div>
+    <div class="bg-white rounded-xl border border-gray-100 p-4 text-center">
+      <div class="text-4xl mb-2">🧤</div>
+      <p class="text-sm font-medium">Luvas Descartáveis</p>
+      <p class="text-xs text-gray-400 mb-2">cx 100 un</p>
+      <p class="text-[#1A3FAA] font-semibold">R$ 28,00</p>
+    </div>
+    <div class="bg-white rounded-xl border border-gray-100 p-4 text-center">
+      <div class="text-4xl mb-2">🧻</div>
+      <p class="text-sm font-medium">Papel Higiênico Rolão</p>
+      <p class="text-xs text-gray-400 mb-2">Fardo</p>
+      <p class="text-[#1A3FAA] font-semibold">R$ 38,00</p>
+    </div>
+  </div>
+
+</div>
+{% endblock %}
