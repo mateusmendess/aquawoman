@@ -5,16 +5,21 @@ from apps.pedidos.carrinho import Carrinho
 def lista_produtos(request):
     categorias = Categoria.objects.filter(ativo=True)
     produtos = Produto.objects.filter(ativo=True)
+
     categoria_slug = request.GET.get('categoria')
+    busca = request.GET.get('busca', '').strip()
+
     if categoria_slug:
         produtos = produtos.filter(categoria__slug=categoria_slug)
 
-    carrinho = Carrinho(request)
+    if busca:
+        produtos = produtos.filter(nome__icontains=busca)
+
     context = {
         'produtos': produtos,
         'categorias': categorias,
         'categoria_slug': categoria_slug,
-        'quantidade_carrinho': len(carrinho),
+        'busca': busca,
     }
 
     if request.headers.get('HX-Request'):
