@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Checkout — Aquawoman{% endblock %}
+
+{% block extra_head %}
+<style>
+  input:focus, textarea:focus {
+    outline: none !important;
+    box-shadow: 0 0 0 2px #29AADF !important;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto px-4 py-8">
+
+  <h1 class="text-xl font-semibold text-gray-800 mb-6">📋 Finalizar Pedido</h1>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+    <!-- Formulário -->
+    <div class="bg-white rounded-2xl border border-gray-100 p-6">
+      <h2 class="text-sm font-semibold text-gray-700 mb-4">Seus dados</h2>
+
+      <form method="POST">
+        {% csrf_token %}
+
+        <div class="mb-4">
+          <label class="text-xs text-gray-500 mb-1 block">Nome completo</label>
+          <input type="text" name="nome" required
+            class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"
+            placeholder="Seu nome completo">
+        </div>
+
+        <div class="mb-4">
+          <label class="text-xs text-gray-500 mb-1 block">Telefone / WhatsApp</label>
+          <input type="text" name="telefone" required
+            class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"
+            placeholder="(94) 9 0000-0000">
+        </div>
+
+        <div class="mb-4">
+          <label class="text-xs text-gray-500 mb-1 block">Endereço de entrega</label>
+          <textarea name="endereco" required rows="3"
+            class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"
+            placeholder="Rua, número, bairro, cidade"></textarea>
+        </div>
+
+        <div class="mb-6">
+          <label class="text-xs text-gray-500 mb-2 block">Forma de pagamento</label>
+          <div class="grid grid-cols-3 gap-2">
+            <label class="border border-gray-200 rounded-lg p-3 text-center cursor-pointer hover:border-[#29AADF] transition has-[:checked]:border-[#29AADF] has-[:checked]:bg-blue-50">
+              <input type="radio" name="forma_pagamento" value="entrega" class="hidden" checked>
+              <p class="text-xl mb-1">💵</p>
+              <p class="text-xs font-medium text-gray-700">Na entrega</p>
+            </label>
+            <label class="border border-gray-200 rounded-lg p-3 text-center cursor-pointer hover:border-[#29AADF] transition has-[:checked]:border-[#29AADF] has-[:checked]:bg-blue-50">
+              <input type="radio" name="forma_pagamento" value="pix" class="hidden">
+              <p class="text-xl mb-1">📱</p>
+              <p class="text-xs font-medium text-gray-700">Pix</p>
+            </label>
+            <label class="border border-gray-200 rounded-lg p-3 text-center cursor-pointer hover:border-[#29AADF] transition has-[:checked]:border-[#29AADF] has-[:checked]:bg-blue-50">
+              <input type="radio" name="forma_pagamento" value="cartao" class="hidden">
+              <p class="text-xl mb-1">💳</p>
+              <p class="text-xs font-medium text-gray-700">Cartão</p>
+            </label>
+          </div>
+        </div>
+
+        <button type="submit"
+          class="w-full bg-[#29AADF] text-white py-3 rounded-xl font-medium hover:bg-[#1A3FAA] transition">
+          Confirmar pedido →
+        </button>
+
+      </form>
+    </div>
+
+    <!-- Resumo do pedido -->
+    <div>
+      <div class="bg-white rounded-2xl border border-gray-100 p-6 mb-4">
+        <h2 class="text-sm font-semibold text-gray-700 mb-4">Resumo do pedido</h2>
+        {% for item in carrinho %}
+        <div class="flex justify-between items-center py-2 border-b border-gray-50 last:border-0">
+          <div>
+            <p class="text-sm text-gray-700">{{ item.produto.nome }}</p>
+            <p class="text-xs text-gray-400">{{ item.quantidade }}x · R$ {{ item.preco }}</p>
+          </div>
+          <p class="text-sm font-medium text-[#1A3FAA]">R$ {{ item.subtotal }}</p>
+        </div>
+        {% endfor %}
+        <div class="flex justify-between items-center pt-3 mt-2">
+          <span class="text-sm font-semibold text-gray-700">Total</span>
+          <span class="text-lg font-bold text-[#1A3FAA]">R$ {{ total }}</span>
+        </div>
+      </div>
+
+      <a href="/carrinho" class="block text-center text-sm text-[#29AADF] hover:underline">
+        ← Voltar ao carrinho
+      </a>
+    </div>
+
+  </div>
+
+</div>
+{% endblock %}

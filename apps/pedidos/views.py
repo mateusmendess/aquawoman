@@ -1,7 +1,9 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse
+from django.contrib import messages
 from apps.produtos.models import Produto
 from .carrinho import Carrinho
+from .models import Pedido, ItemPedido
 
 def carrinho_detalhe(request):
     carrinho = Carrinho(request)
@@ -45,3 +47,50 @@ def carrinho_atualizar(request, produto_id):
         'carrinho': carrinho,
         'total': carrinho.total(),
     })
+
+def checkout(request):
+    carrinho = Carrinho(request)
+
+    if len(carrinho) == 0:
+        messages.error(request, 'Seu carrinho está vazio!')
+        return redirect('produtos:lista')
+
+    if request.method == 'POST':
+        nome = request.POST.get('nome')
+        telefone = request.POST.get('telefone')
+        endereco = request.POST.get('endereco')
+        forma_pagamento = request.POST.get('forma_pagamento')
+
+        # Cria o pedido
+        pedido = Pedido.objects.create(
+            nome=nome,
+            telefone=telefone,
+            endereco=endereco,
+            forma_pagamento=forma_pagamento,
+            total=carrinho.total(),
+        )
+
+        # Cria os itens do pedido
+        for item in carrinho:
+            ItemPedido.objects.create(
+                pedido=pedido,
+                produto=item['produto'],
+                quantidade=item['quantidade'],
+                preco_unitario=item['preco'],
+            )
+
+        # Limpa o carrinho
+        carrinho.limpar()
+
+        messages.success(request, f'Pedido #{pedido.id} realizado com sucesso!')
+        return redirect('pedidos:confirmacao', pedido_id=pedido.id)
+
+    context = {
+        'carrinho': carrinho,
+        'total': carrinho.total(),
+    }
+    return render(request, 'pedidos/checkout.html', context)
+
+def confirmacao(request, pedido_id):
+    pedido = get_object_or_404(Pedido, id=pedido_id)
+    return render(request, 'pedidos/confirmacao.html', {'pedido': pedido})
