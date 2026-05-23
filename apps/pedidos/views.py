@@ -94,3 +94,17 @@ def checkout(request):
 def confirmacao(request, pedido_id):
     pedido = get_object_or_404(Pedido, id=pedido_id)
     return render(request, 'pedidos/confirmacao.html', {'pedido': pedido})
+
+def meus_pedidos(request):
+    pedidos = []
+    telefone = ''
+
+    if request.method == 'POST':
+        telefone = request.POST.get('telefone', '').strip()
+        if telefone:
+            pedidos = Pedido.objects.filter(telefone=telefone).order_by('-criado_em')
+
+    return render(request, 'pedidos/meus_pedidos.html', {
+        'pedidos': pedidos,
+        'telefone': telefone,
+    })
