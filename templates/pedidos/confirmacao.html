@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Pedido Confirmado — Aquawoman{% endblock %}
+
+{% block content %}
+<div class="max-w-xl mx-auto px-4 py-12 text-center">
+
+  <!-- Ícone de sucesso -->
+  <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+    <i class="ti ti-check text-4xl text-green-500"></i>
+  </div>
+
+  <h1 class="text-2xl font-semibold text-gray-800 mb-2">Pedido confirmado!</h1>
+  <p class="text-gray-500 text-sm mb-8">Obrigado, <strong>{{ pedido.nome }}</strong>! Seu pedido foi recebido e em breve entraremos em contato.</p>
+
+  <!-- Detalhes do pedido -->
+  <div class="bg-white rounded-2xl border border-gray-100 p-6 text-left mb-6">
+    <h2 class="text-sm font-semibold text-gray-700 mb-4">Detalhes do pedido #{{ pedido.id }}</h2>
+
+    <div class="space-y-3">
+      <div class="flex justify-between text-sm">
+        <span class="text-gray-500">Nome</span>
+        <span class="font-medium text-gray-800">{{ pedido.nome }}</span>
+      </div>
+      <div class="flex justify-between text-sm">
+        <span class="text-gray-500">Telefone</span>
+        <span class="font-medium text-gray-800">{{ pedido.telefone }}</span>
+      </div>
+      <div class="flex justify-between text-sm">
+        <span class="text-gray-500">Endereço</span>
+        <span class="font-medium text-gray-800 text-right max-w-48">{{ pedido.endereco }}</span>
+      </div>
+      <div class="flex justify-between text-sm">
+        <span class="text-gray-500">Pagamento</span>
+        <span class="font-medium text-gray-800">{{ pedido.get_forma_pagamento_display }}</span>
+      </div>
+      <div class="flex justify-between text-sm border-t border-gray-100 pt-3 mt-3">
+        <span class="font-semibold text-gray-700">Total</span>
+        <span class="font-bold text-[#1A3FAA]">R$ {{ pedido.total }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Itens do pedido -->
+  <div class="bg-white rounded-2xl border border-gray-100 p-6 text-left mb-6">
+    <h2 class="text-sm font-semibold text-gray-700 mb-4">Itens do pedido</h2>
+    {% for item in pedido.itens.all %}
+    <div class="flex justify-between items-center py-2 border-b border-gray-50 last:border-0">
+      <div>
+        <p class="text-sm text-gray-700">{{ item.produto.nome }}</p>
+        <p class="text-xs text-gray-400">{{ item.quantidade }}x · R$ {{ item.preco_unitario }}</p>
+      </div>
+      <p class="text-sm font-medium text-[#1A3FAA]">R$ {{ item.subtotal }}</p>
+    </div>
+    {% endfor %}
+  </div>
+
+  <!-- WhatsApp -->
+  <div class="bg-green-50 border border-green-200 rounded-2xl p-4 mb-6">
+    <p class="text-sm text-green-700 mb-3">
+      <i class="ti ti-brand-whatsapp text-base align-middle"></i>
+      Entraremos em contato pelo WhatsApp para confirmar a entrega!
+    </p>
+    <a href="https://wa.me/5594984000463?text=Olá! Fiz o pedido %23{{ pedido.id }} no site da Aquawoman."
+       target="_blank"
+       class="bg-green-500 text-white text-sm px-6 py-2 rounded-lg inline-block hover:bg-green-600 transition">
+      Chamar no WhatsApp
+    </a>
+  </div>
+
+  <a href="/" class="bg-[#29AADF] text-white text-sm px-8 py-3 rounded-xl inline-block hover:bg-[#1A3FAA] transition font-medium">
+    Continuar comprando
+  </a>
+
+</div>
+{% endblock %}
