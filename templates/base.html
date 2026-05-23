@@ -49,6 +49,11 @@
       <div class="flex items-center gap-6">
         <a href="/" class="text-white text-sm opacity-90 hover:opacity-100">Produtos</a>
         <a href="/carrinho" class="text-white text-sm opacity-90 hover:opacity-100">Meus Pedidos</a>
+        {% if request.user.is_staff %}
+        <a href="/painel/" class="text-white text-sm opacity-90 hover:opacity-100">
+          <i class="ti ti-layout-dashboard text-base align-middle"></i> Painel
+        </a>
+        {% endif %}
 
         <!-- Carrinho -->
         <a href="/carrinho" class="bg-[#1A3FAA] text-white text-sm px-4 py-2 rounded-lg flex items-center gap-2 relative hover:bg-blue-900 transition">
