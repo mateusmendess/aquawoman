@@ -5,16 +5,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{% block title %}Aquawoman — Limpeza e Descartáveis{% endblock %}</title>
-
-  <!-- Tailwind CSS via CDN (temporário até configurar o build) -->
   <script src="https://cdn.tailwindcss.com"></script>
-
-  <!-- HTMX -->
   <script src="https://unpkg.com/htmx.org@1.9.10"></script>
-
-  <!-- Tabler Icons -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
-
   <script>
     tailwind.config = {
       theme: {
@@ -27,25 +20,20 @@
       }
     }
   </script>
-
   {% block extra_head %}{% endblock %}
 </head>
 <body class="bg-gray-50 min-h-screen flex flex-col">
 
-  <!-- NAVBAR -->
   <nav class="bg-[#29AADF] shadow-md">
     <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
-
-      <!-- Logo -->
       <a href="/" class="flex items-center gap-3">
-       <img src="{% static 'img/logo.png' %}" alt="Aquawoman" class="h-16 object-contain" onerror="this.style.display='none'">
+        <img src="https://raw.githubusercontent.com/mateusmendess/aquawoman/main/static/img/logo.png"
+             alt="Aquawoman" class="h-16 object-contain">
         <div class="flex flex-col leading-tight">
           <span class="font-bold text-white text-lg tracking-wide" style="font-family: Georgia, serif;">AQUAWOMAN</span>
           <span class="text-white text-xs opacity-80">limpeza e descartáveis</span>
         </div>
       </a>
-
-      <!-- Links -->
       <div class="flex items-center gap-6">
         <a href="/" class="text-white text-sm opacity-90 hover:opacity-100">Produtos</a>
         <a href="/meus-pedidos/" class="text-white text-sm opacity-90 hover:opacity-100">Meus Pedidos</a>
@@ -54,8 +42,6 @@
           <i class="ti ti-layout-dashboard text-base align-middle"></i> Painel
         </a>
         {% endif %}
-
-        <!-- Carrinho -->
         <a href="/carrinho" class="bg-[#1A3FAA] text-white text-sm px-4 py-2 rounded-lg flex items-center gap-2 relative hover:bg-blue-900 transition">
           <i class="ti ti-shopping-cart text-base"></i> Carrinho
           <span id="carrinho-contador" class="absolute -top-2 -right-2 bg-white text-[#1A3FAA] text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">
@@ -63,11 +49,9 @@
           </span>
         </a>
       </div>
-
     </div>
   </nav>
 
-  <!-- MENSAGENS -->
   {% if messages %}
   <div class="max-w-6xl mx-auto px-4 mt-4">
     {% for message in messages %}
@@ -81,12 +65,10 @@
   </div>
   {% endif %}
 
-  <!-- CONTEÚDO -->
   <main class="flex-1">
     {% block content %}{% endblock %}
   </main>
 
-  <!-- FOOTER -->
   <footer class="bg-[#1A3FAA] mt-12">
     <div class="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
       <span class="text-white text-xs opacity-80">
@@ -99,14 +81,12 @@
     </div>
   </footer>
 
-  <!-- Toast de confirmação -->
   <div id="toast"
        class="fixed bottom-6 right-6 bg-[#1A3FAA] text-white text-sm px-5 py-3 rounded-xl shadow-lg hidden items-center gap-2 z-50">
     ✅ Produto adicionado ao carrinho!
   </div>
 
   <script src="{% static 'js/main.js' %}"></script>
-
   {% block extra_js %}{% endblock %}
 </body>
 </html>
