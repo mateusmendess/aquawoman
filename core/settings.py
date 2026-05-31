@@ -25,6 +25,7 @@ INSTALLED_APPS = [
     'apps.pedidos',
     'apps.clientes',
     'apps.dashboard',
+    'apps.pagamentos',
 ]
 
 MIDDLEWARE = [
@@ -96,3 +97,10 @@ if not DEBUG:
 
 origins = os.getenv('CSRF_TRUSTED_ORIGINS', '')
 CSRF_TRUSTED_ORIGINS = [o for o in origins.split(',') if o]
+
+# Mercado Pago
+MP_ACCESS_TOKEN = os.getenv('MP_ACCESS_TOKEN')
+MP_PUBLIC_KEY = os.getenv('MP_PUBLIC_KEY')
+
+# URL do site
+SITE_URL = os.getenv('SITE_URL', 'http://127.0.0.1:8000')
