@@ -60,6 +60,7 @@ def checkout(request):
         telefone = request.POST.get('telefone')
         endereco = request.POST.get('endereco')
         forma_pagamento = request.POST.get('forma_pagamento')
+        pagamento = request.POST.get('pagamento')
 
         # Cria o pedido
         pedido = Pedido.objects.create(
@@ -81,6 +82,10 @@ def checkout(request):
 
         # Limpa o carrinho
         carrinho.limpar()
+
+        # Redireciona para Mercado Pago ou confirmação
+        if pagamento == 'online':
+            return redirect(f'/pagamento/criar/{pedido.id}/')
 
         messages.success(request, f'Pedido #{pedido.id} realizado com sucesso!')
         return redirect('pedidos:confirmacao', pedido_id=pedido.id)

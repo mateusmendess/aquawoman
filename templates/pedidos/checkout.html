@@ -68,9 +68,15 @@
           </div>
         </div>
 
-        <button type="submit"
-          class="w-full bg-[#29AADF] text-white py-3 rounded-xl font-medium hover:bg-[#1A3FAA] transition">
-          Confirmar pedido →
+        <button type="submit" name="pagamento" value="entrega"
+          class="w-full bg-[#29AADF] text-white py-3 rounded-xl font-medium hover:bg-[#1A3FAA] transition mb-3">
+          Confirmar pedido (pagar na entrega) →
+        </button>
+
+        <button type="submit" name="pagamento" value="online"
+          class="w-full bg-[#009EE3] text-white py-3 rounded-xl font-medium hover:bg-[#007EB5] transition flex items-center justify-center gap-2">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/></svg>
+          Pagar com Mercado Pago (Pix ou Cartão)
         </button>
 
       </form>
