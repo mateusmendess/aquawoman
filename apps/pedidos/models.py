@@ -14,6 +14,7 @@ class Pedido(models.Model):
         ('entrega', 'Pagamento na Entrega'),
         ('pix', 'Pix'),
         ('cartao', 'Cartão'),
+        ('retirada', 'Retirada na Loja'),
     ]
 
     nome = models.CharField(max_length=200)

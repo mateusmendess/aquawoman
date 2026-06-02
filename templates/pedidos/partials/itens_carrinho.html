@@ -8,7 +8,7 @@
   <div class="flex-1">
     <p class="text-sm font-medium text-gray-800">{{ item.produto.nome }}</p>
     <p class="text-xs text-gray-400">{{ item.produto.descricao }}</p>
-    <p class="text-xs text-[#1A3FAA] font-medium mt-1">R$ {{ item.preco }} cada</p>
+    <p class="text-xs text-[#1A3FAA] font-medium mt-1">R$ {{ item.preco|floatformat:2 }} cada</p>
   </div>
   <div class="flex flex-col items-end gap-2">
     <div class="flex items-center gap-2">
@@ -32,7 +32,7 @@
         +
       </button>
     </div>
-    <p class="text-sm font-semibold text-[#1A3FAA]">R$ {{ item.subtotal }}</p>
+    <p class="text-sm font-semibold text-[#1A3FAA]">R$ {{ item.subtotal|floatformat:2 }}</p>
     <button
       hx-post="{% url 'pedidos:carrinho_atualizar' item.produto.id %}"
       hx-vals='{"quantidade": 0}'
@@ -57,5 +57,5 @@
 <!-- Total atualizado pelo HTMX -->
 <div class="border-t border-gray-100 p-4 flex justify-between items-center">
   <span class="text-sm text-gray-600">Total</span>
-  <span class="text-lg font-bold text-[#1A3FAA]">R$ {{ total }}</span>
+  <span class="text-lg font-bold text-[#1A3FAA]">R$ {{ total|floatformat:2 }}</span>
 </div>
