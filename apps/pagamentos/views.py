@@ -4,7 +4,7 @@ from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings
 import json
-
+from apps.pedidos.views import enviar_email_pedido
 from apps.pedidos.models import Pedido
 
 sdk = mercadopago.SDK(settings.MP_ACCESS_TOKEN)
@@ -53,6 +53,7 @@ def pagamento_sucesso(request, pedido_id):
     pedido = get_object_or_404(Pedido, id=pedido_id)
     pedido.status = 'confirmado'
     pedido.save()
+    enviar_email_pedido(pedido)
     return redirect(f'/confirmacao/{pedido.id}/')
 
 
