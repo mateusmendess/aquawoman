@@ -4,6 +4,8 @@ from django.contrib import messages
 from apps.produtos.models import Produto
 from .carrinho import Carrinho
 from .models import Pedido, ItemPedido
+from django.core.mail import send_mail
+from django.conf import settings
 
 def carrinho_detalhe(request):
     carrinho = Carrinho(request)
@@ -48,6 +50,38 @@ def carrinho_atualizar(request, produto_id):
         'total': carrinho.total(),
     })
 
+def enviar_email_pedido(pedido):
+    itens_texto = ''
+    for item in pedido.itens.all():
+        itens_texto += f'\n- {item.produto.nome} x{item.quantidade} — R$ {item.subtotal()}'
+
+    mensagem = f'''
+Novo pedido recebido! 🛒
+
+Pedido #{pedido.id}
+Cliente: {pedido.nome}
+Telefone: {pedido.telefone}
+Endereço: {pedido.endereco}
+Pagamento: {pedido.get_forma_pagamento_display()}
+
+Produtos:{itens_texto}
+
+Total: R$ {pedido.total}
+
+Acesse o painel para gerenciar: https://aquawoman.up.railway.app/painel/
+    '''
+
+    try:
+        send_mail(
+            subject=f'🛒 Novo pedido #{pedido.id} — Aquawoman',
+            message=mensagem,
+            from_email=settings.EMAIL_HOST_USER,
+            recipient_list=[settings.EMAIL_DESTINATARIO],
+            fail_silently=True,
+        )
+    except Exception:
+        pass
+
 def checkout(request):
     carrinho = Carrinho(request)
 
@@ -82,6 +116,9 @@ def checkout(request):
 
         # Limpa o carrinho
         carrinho.limpar()
+
+        # Envia email de notificação
+        enviar_email_pedido(pedido)
 
         # Redireciona para Mercado Pago ou confirmação
         if pagamento == 'online':
