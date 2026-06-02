@@ -6,6 +6,7 @@ from .carrinho import Carrinho
 from .models import Pedido, ItemPedido
 from django.core.mail import send_mail
 from django.conf import settings
+import threading
 
 def carrinho_detalhe(request):
     carrinho = Carrinho(request)
@@ -68,19 +69,24 @@ Produtos:{itens_texto}
 
 Total: R$ {pedido.total}
 
-Acesse o painel para gerenciar: https://aquawoman.up.railway.app/painel/
+Acesse o painel: https://aquawoman.up.railway.app/painel/
     '''
 
-    try:
-        send_mail(
-            subject=f'🛒 Novo pedido #{pedido.id} — Aquawoman',
-            message=mensagem,
-            from_email=settings.EMAIL_HOST_USER,
-            recipient_list=[settings.EMAIL_DESTINATARIO],
-            fail_silently=True,
-        )
-    except Exception:
-        pass
+    def enviar():
+        try:
+            send_mail(
+                subject=f'🛒 Novo pedido #{pedido.id} — Aquawoman',
+                message=mensagem,
+                from_email=settings.EMAIL_HOST_USER,
+                recipient_list=[settings.EMAIL_DESTINATARIO],
+                fail_silently=True,
+            )
+        except Exception:
+            pass
+
+    thread = threading.Thread(target=enviar)
+    thread.daemon = True
+    thread.start()
 
 def checkout(request):
     carrinho = Carrinho(request)
