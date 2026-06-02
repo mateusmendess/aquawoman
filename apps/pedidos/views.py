@@ -6,7 +6,6 @@ from .carrinho import Carrinho
 from .models import Pedido, ItemPedido
 from django.core.mail import send_mail
 from django.conf import settings
-import threading
 
 def carrinho_detalhe(request):
     carrinho = Carrinho(request)
@@ -52,37 +51,37 @@ def carrinho_atualizar(request, produto_id):
     })
 
 def enviar_email_pedido(pedido):
+    import threading
+    import resend
+
     itens_texto = ''
     for item in pedido.itens.all():
-        itens_texto += f'\n- {item.produto.nome} x{item.quantidade} — R$ {item.subtotal()}'
+        itens_texto += f'<li>{item.produto.nome} x{item.quantidade} — R$ {item.subtotal()}</li>'
 
-    mensagem = f'''
-Novo pedido recebido! 🛒
-
-Pedido #{pedido.id}
-Cliente: {pedido.nome}
-Telefone: {pedido.telefone}
-Endereço: {pedido.endereco}
-Pagamento: {pedido.get_forma_pagamento_display()}
-
-Produtos:{itens_texto}
-
-Total: R$ {pedido.total}
-
-Acesse o painel: https://aquawoman.up.railway.app/painel/
+    html = f'''
+    <h2>🛒 Novo pedido #{pedido.id} — Aquawoman</h2>
+    <p><strong>Cliente:</strong> {pedido.nome}</p>
+    <p><strong>Telefone:</strong> {pedido.telefone}</p>
+    <p><strong>Endereço:</strong> {pedido.endereco}</p>
+    <p><strong>Pagamento:</strong> {pedido.get_forma_pagamento_display()}</p>
+    <h3>Produtos:</h3>
+    <ul>{itens_texto}</ul>
+    <p><strong>Total: R$ {pedido.total}</strong></p>
+    <br>
+    <a href="https://aquawoman.up.railway.app/painel/">Acessar o painel</a>
     '''
 
     def enviar():
         try:
-            send_mail(
-                subject=f'🛒 Novo pedido #{pedido.id} — Aquawoman',
-                message=mensagem,
-                from_email=settings.EMAIL_HOST_USER,
-                recipient_list=[settings.EMAIL_DESTINATARIO],
-                fail_silently=True,
-            )
-        except Exception:
-            pass
+            resend.api_key = settings.RESEND_API_KEY
+            resend.Emails.send({
+                "from": "Aquawoman <onboarding@resend.dev>",
+                "to": [settings.EMAIL_DESTINATARIO],
+                "subject": f"🛒 Novo pedido #{pedido.id} — Aquawoman",
+                "html": html,
+            })
+        except Exception as e:
+            print(f"Erro ao enviar email: {e}")
 
     thread = threading.Thread(target=enviar)
     thread.daemon = True
