@@ -3,9 +3,9 @@ document.body.addEventListener('htmx:afterRequest', function(e) {
   if (e.detail.requestConfig && e.detail.requestConfig.path && e.detail.requestConfig.path.includes('adicionar')) {
     const toast = document.getElementById('toast');
     if (toast) {
-      toast.classList.remove('hidden');
+      toast.style.display = 'block';
       setTimeout(function() {
-        toast.classList.add('hidden');
+        toast.style.display = 'none';
       }, 1500);
     }
   }
