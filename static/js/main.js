@@ -1,16 +1,3 @@
-// ── Popup de confirmação ao adicionar ao carrinho ──
-document.body.addEventListener('htmx:afterRequest', function(e) {
-  if (e.detail.requestConfig && e.detail.requestConfig.path && e.detail.requestConfig.path.includes('adicionar')) {
-    const toast = document.getElementById('toast');
-    if (toast) {
-      toast.style.display = 'block';
-      setTimeout(function() {
-        toast.style.display = 'none';
-      }, 1500);
-    }
-  }
-});
-
 // ── Filtro de categorias — botão ativo ──
 function setAtivo(btn) {
   document.querySelectorAll('.cat-btn').forEach(b => {
