@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /painel/
+Disallow: /checkout/
+Disallow: /carrinho/
+
+Sitemap: https://aquawoman.up.railway.app/sitemap.xml
