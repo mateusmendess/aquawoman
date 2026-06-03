@@ -4,7 +4,24 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{% block title %}Aquawoman — Limpeza e Descartáveis{% endblock %}</title>
+  <title>{% block title %}Aquawoman — Limpeza e Descartáveis em Parauapebas{% endblock %}</title>
+  <meta name="description" content="{% block description %}Aquawoman — produtos de limpeza e descartáveis em Parauapebas. Fazemos entregas! Pix, cartão e dinheiro.{% endblock %}">
+  <meta name="keywords" content="limpeza, descartáveis, Parauapebas, produtos de limpeza, entregas Parauapebas">
+  <meta name="author" content="Aquawoman">
+
+  <!-- Open Graph (WhatsApp, Facebook) -->
+  <meta property="og:title" content="{% block og_title %}Aquawoman — Limpeza e Descartáveis{% endblock %}">
+  <meta property="og:description" content="{% block og_description %}Produtos de limpeza e descartáveis em Parauapebas. Fazemos entregas!{% endblock %}">
+  <meta property="og:image" content="https://i.imgur.com/zcuKAhS.png">
+  <meta property="og:url" content="https://aquawoman.up.railway.app">
+  <meta property="og:type" content="website">
+
+  <!-- Twitter/X -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Aquawoman — Limpeza e Descartáveis">
+  <meta name="twitter:description" content="Produtos de limpeza e descartáveis em Parauapebas. Fazemos entregas!">
+  <meta name="twitter:image" content="https://i.imgur.com/zcuKAhS.png">
+
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/htmx.org@1.9.10"></script>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
@@ -90,16 +107,16 @@
 
   <script src="{% static 'js/main.js' %}?v=5"></script>
   {% block extra_js %}{% endblock %}
-<script>
-document.body.addEventListener('htmx:afterRequest', function(e) {
-  if (e.detail.requestConfig && e.detail.requestConfig.path && e.detail.requestConfig.path.includes('adicionar')) {
-    var toast = document.getElementById('toast');
-    if (toast) {
-      toast.style.display = 'block';
-      setTimeout(function() { toast.style.display = 'none'; }, 1500);
+  <script>
+  document.body.addEventListener('htmx:afterRequest', function(e) {
+    if (e.detail.requestConfig && e.detail.requestConfig.path && e.detail.requestConfig.path.includes('adicionar')) {
+      var toast = document.getElementById('toast');
+      if (toast) {
+        toast.style.display = 'block';
+        setTimeout(function() { toast.style.display = 'none'; }, 1500);
+      }
     }
-  }
-});
-</script>
+  });
+  </script>
 </body>
 </html>
