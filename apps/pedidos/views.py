@@ -97,11 +97,17 @@ def checkout(request):
     if request.method == 'POST':
         nome = request.POST.get('nome')
         telefone = request.POST.get('telefone')
-        endereco = request.POST.get('endereco')
-        forma_pagamento = request.POST.get('forma_pagamento')
+        endereco = request.POST.get('endereco', 'Retirada na loja')
         pagamento = request.POST.get('pagamento')
+        tipo_entrega = request.POST.get('tipo_entrega', 'entrega')
 
-        # Cria o pedido
+        if tipo_entrega == 'retirada':
+            forma_pagamento = 'retirada'
+        elif pagamento == 'online':
+            forma_pagamento = 'pix'
+        else:
+            forma_pagamento = 'entrega'
+
         pedido = Pedido.objects.create(
             nome=nome,
             telefone=telefone,
@@ -110,7 +116,6 @@ def checkout(request):
             total=carrinho.total(),
         )
 
-        # Cria os itens do pedido
         for item in carrinho:
             ItemPedido.objects.create(
                 pedido=pedido,
@@ -119,13 +124,9 @@ def checkout(request):
                 preco_unitario=item['preco'],
             )
 
-        # Limpa o carrinho
         carrinho.limpar()
-
-        # Envia email de notificação
         enviar_email_pedido(pedido)
 
-        # Redireciona para Mercado Pago ou confirmação
         if pagamento == 'online':
             return redirect(f'/pagamento/criar/{pedido.id}/')
 
