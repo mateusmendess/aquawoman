@@ -56,7 +56,7 @@ def enviar_email_pedido(pedido):
 
     itens_texto = ''
     for item in pedido.itens.all():
-        itens_texto += f'<li>{item.produto.nome} x{item.quantidade} — R$ {item.subtotal()}</li>'
+        itens_texto += f'<li>{item.produto.nome} x{item.quantidade} — R$ {item.subtotal():.2f}</li>'
 
     html = f'''
     <h2>🛒 Novo pedido #{pedido.id} — Aquawoman</h2>
@@ -66,7 +66,7 @@ def enviar_email_pedido(pedido):
     <p><strong>Pagamento:</strong> {pedido.get_forma_pagamento_display()}</p>
     <h3>Produtos:</h3>
     <ul>{itens_texto}</ul>
-    <p><strong>Total: R$ {pedido.total}</strong></p>
+    <p><strong>Total: R$ {pedido.total:.2f}</strong></p>
     <br>
     <a href="https://aquawoman.up.railway.app/painel/">Acessar o painel</a>
     '''
@@ -125,14 +125,15 @@ def checkout(request):
             )
 
         carrinho.limpar()
-        enviar_email_pedido(pedido)
 
         if pagamento == 'online':
             return redirect(f'/pagamento/criar/{pedido.id}/')
 
+        # Só envia email para pagamento na entrega/retirada
+        enviar_email_pedido(pedido)
         messages.success(request, f'Pedido #{pedido.id} realizado com sucesso!')
         return redirect('pedidos:confirmacao', pedido_id=pedido.id)
-
+    
     context = {
         'carrinho': carrinho,
         'total': carrinho.total(),
