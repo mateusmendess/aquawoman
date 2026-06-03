@@ -1,14 +1,13 @@
-// ── Toast de confirmação ao adicionar ao carrinho ──
+// ── Popup de confirmação ao adicionar ao carrinho ──
 document.body.addEventListener('htmx:afterRequest', function(e) {
-  const path = e.detail.requestConfig && e.detail.requestConfig.path;
-  if (path && path.includes('adicionar')) {
+  if (e.detail.requestConfig && e.detail.requestConfig.path && e.detail.requestConfig.path.includes('adicionar')) {
     const toast = document.getElementById('toast');
-    toast.classList.remove('hidden');
-    toast.classList.add('flex');
-    setTimeout(() => {
-      toast.classList.add('hidden');
-      toast.classList.remove('flex');
-    }, 2000);
+    if (toast) {
+      toast.classList.remove('hidden');
+      setTimeout(function() {
+        toast.classList.add('hidden');
+      }, 1500);
+    }
   }
 });
 
@@ -21,4 +20,3 @@ function setAtivo(btn) {
   btn.classList.add('bg-[#29AADF]', 'text-white');
   btn.classList.remove('border', 'border-[#29AADF]', 'text-[#1A3FAA]');
 }
-
