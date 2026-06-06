@@ -53,7 +53,8 @@
         </div>
       </a>
       <div class="flex items-center gap-6">
-        <a href="/" class="text-white text-sm opacity-90 hover:opacity-100">Produtos</a>
+        <a href="/" class="text-white text-sm opacity-90 hover:opacity-100 {% if request.path == '/' %}border-b-2 border-white pb-1{% endif %}">Início</a>
+        <a href="/produtos/" class="text-white text-sm opacity-90 hover:opacity-100 {% if request.path == '/produtos/' %}border-b-2 border-white pb-1{% endif %}">Produtos</a>
         <a href="/meus-pedidos/" class="text-white text-sm opacity-90 hover:opacity-100">Meus Pedidos</a>
         {% if request.user.is_staff %}
         <a href="/painel/" class="text-white text-sm opacity-90 hover:opacity-100">
@@ -92,10 +93,10 @@
       <span class="text-white text-xs opacity-80">
         <i class="ti ti-truck text-sm align-middle"></i> Fazemos entregas
       </span>
+      <span class="text-[#9FE1CB] text-xs">© 2026 Aquawoman · Limpeza e Descartáveis</span>
       <span class="text-white text-xs opacity-80">
         <i class="ti ti-brand-whatsapp text-sm align-middle"></i> 94 984000463
       </span>
-      <span class="text-[#9FE1CB] text-xs">© 2026 Aquawoman · Limpeza e Descartáveis</span>
     </div>
   </footer>
 

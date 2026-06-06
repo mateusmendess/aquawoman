@@ -26,3 +26,6 @@ def lista_produtos(request):
         return render(request, 'produtos/partials/lista_produtos.html', context)
 
     return render(request, 'produtos/lista.html', context)
+
+def home(request):
+    return render(request, 'home.html')

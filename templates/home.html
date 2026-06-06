@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Aquawoman — Limpeza e Descartáveis em Parauapebas{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto px-4 py-20 flex flex-col gap-4 flex-1 justify-center">
+
+  <!-- Hero -->
+  <div class="bg-gradient-to-r from-[#1A3FAA] to-[#29AADF] rounded-2xl p-10 text-white flex-1">
+    <p class="text-sm opacity-80 mb-2">✦ Aquawoman — a gente vai além.</p>
+    <h1 class="text-3xl font-semibold mb-3">Qualidade em limpeza<br>e descartáveis</h1>
+    <p class="text-sm opacity-75 mb-6">Soluções completas para casa e empresas · Fazemos entregas</p>
+    <a href="/produtos/" class="bg-white text-[#1A3FAA] font-semibold text-sm px-5 py-2 rounded-lg inline-block mb-5">
+      Ver catálogo completo
+    </a>
+    <div class="flex gap-3 flex-wrap">
+      <span class="bg-white/20 text-white text-xs px-3 py-1 rounded-full border border-white/25">🚚 Fazemos entregas</span>
+      <span class="bg-white/20 text-white text-xs px-3 py-1 rounded-full border border-white/25">💳 Pix e cartão</span>
+      <span class="bg-white/20 text-white text-xs px-3 py-1 rounded-full border border-white/25">⭐ Qualidade garantida</span>
+    </div>
+  </div>
+
+  <!-- Diferenciais -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div class="bg-white rounded-2xl border border-gray-100 p-5 text-center">
+      <i class="ti ti-truck text-3xl text-[#29AADF] block mb-2"></i>
+      <p class="text-sm font-semibold text-gray-800 mb-1">Entregas rápidas</p>
+      <p class="text-xs text-gray-500">Parauapebas e região</p>
+    </div>
+    <div class="bg-white rounded-2xl border border-gray-100 p-5 text-center">
+      <i class="ti ti-credit-card text-3xl text-[#29AADF] block mb-2"></i>
+      <p class="text-sm font-semibold text-gray-800 mb-1">Pix e cartão</p>
+      <p class="text-xs text-gray-500">Pagamento online seguro</p>
+    </div>
+    <div class="bg-white rounded-2xl border border-gray-100 p-5 text-center">
+      <i class="ti ti-map-pin text-3xl text-[#29AADF] block mb-2"></i>
+      <p class="text-sm font-semibold text-gray-800 mb-1">Retirada na loja</p>
+      <p class="text-xs text-gray-500">Av. dos Ipês, nº 4 — Parauapebas</p>
+    </div>
+  </div>
+
+  <!-- WhatsApp -->
+  <a href="https://wa.me/5594984000463" target="_blank"
+    class="bg-[#25D366] rounded-2xl p-5 flex items-center justify-between hover:opacity-90 transition">
+    <div>
+      <p class="text-white font-semibold text-sm mb-1">Fale conosco pelo WhatsApp</p>
+      <p class="text-white text-xs opacity-85">(94) 98400-0463</p>
+    </div>
+    <i class="ti ti-brand-whatsapp text-3xl text-white"></i>
+  </a>
+
+</div>
+{% endblock %}
