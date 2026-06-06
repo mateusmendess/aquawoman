@@ -26,6 +26,7 @@
         {% csrf_token %}
         <input type="hidden" name="pagamento" id="input-pagamento" value="entrega">
         <input type="hidden" name="tipo_entrega" id="input-tipo-entrega" value="entrega">
+        <input type="hidden" name="forma_pagamento_tipo" id="input-forma-pagamento-tipo" value="dinheiro">
 
         <div class="mb-4">
           <label class="text-xs text-gray-500 mb-1 block">Nome completo</label>
@@ -207,6 +208,7 @@ function selecionarPagamento(el, tipo) {
   document.querySelectorAll('.ck-pay').forEach(p => p.classList.remove('active'));
   el.classList.add('active');
   tipoPagamento = tipo;
+  document.getElementById('input-forma-pagamento-tipo').value = tipo;
   const quando = document.getElementById('quando-pagar');
   if (tipo === 'pix' || tipo === 'cartao') {
     quando.classList.remove('hidden');

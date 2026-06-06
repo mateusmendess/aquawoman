@@ -10,18 +10,25 @@ class Pedido(models.Model):
         ('cancelado', 'Cancelado'),
     ]
 
+    RECEBIMENTO_CHOICES = [
+        ('entrega', 'Entrega em casa'),
+        ('retirada', 'Retirada na loja'),
+    ]
+
     PAGAMENTO_CHOICES = [
-        ('entrega', 'Pagamento na Entrega'),
+        ('dinheiro', 'Dinheiro'),
         ('pix', 'Pix'),
         ('cartao', 'Cartão'),
-        ('retirada', 'Retirada na Loja'),
+        ('pix_online', 'Pix online'),
+        ('cartao_online', 'Cartão online'),
     ]
 
     nome = models.CharField(max_length=200)
     telefone = models.CharField(max_length=20)
     endereco = models.TextField()
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pendente')
-    forma_pagamento = models.CharField(max_length=20, choices=PAGAMENTO_CHOICES, default='entrega')
+    forma_recebimento = models.CharField(max_length=20, choices=RECEBIMENTO_CHOICES, default='entrega')
+    forma_pagamento = models.CharField(max_length=20, choices=PAGAMENTO_CHOICES, default='dinheiro')
     total = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     criado_em = models.DateTimeField(auto_now_add=True)
     atualizado_em = models.DateTimeField(auto_now=True)

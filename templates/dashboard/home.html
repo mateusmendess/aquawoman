@@ -59,7 +59,10 @@
             <tr class="border-b border-gray-50 hover:bg-gray-50 transition">
               <td class="py-2 text-gray-400 text-xs">#{{ pedido.id }}</td>
               <td class="py-2 font-medium text-gray-800">{{ pedido.nome }}</td>
-              <td class="py-2 text-gray-500 text-xs">{{ pedido.get_forma_pagamento_display }}</td>
+              <td class="py-2 text-gray-500 text-xs">
+                {{ pedido.get_forma_recebimento_display }}<br>
+                <span class="text-gray-400">{{ pedido.get_forma_pagamento_display }}</span>
+              </td>
               <td class="py-2">
                 <select
                   hx-post="{% url 'dashboard:atualizar_status' pedido.id %}"
