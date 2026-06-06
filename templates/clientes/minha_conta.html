@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Minha Conta — Aquawoman{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto px-4 py-8">
+
+  <h1 class="text-xl font-semibold text-gray-800 mb-6">👤 Minha Conta</h1>
+
+  <div class="bg-white rounded-2xl border border-gray-100 p-6 mb-6">
+    <h2 class="text-sm font-semibold text-gray-700 mb-4">Seus dados</h2>
+    <div class="space-y-3">
+      <div class="flex justify-between items-center py-2 border-b border-gray-50">
+        <span class="text-sm text-gray-500">Nome</span>
+        <span class="text-sm font-medium text-gray-800">{{ cliente.nome }}</span>
+      </div>
+      <div class="flex justify-between items-center py-2 border-b border-gray-50">
+        <span class="text-sm text-gray-500">Email</span>
+        <span class="text-sm font-medium text-gray-800">{{ cliente.email }}</span>
+      </div>
+      <div class="flex justify-between items-center py-2 border-b border-gray-50">
+        <span class="text-sm text-gray-500">Telefone</span>
+        <span class="text-sm font-medium text-gray-800">{{ cliente.telefone|default:"Não informado" }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="flex gap-3">
+    <a href="/meus-pedidos/" class="flex-1 bg-[#29AADF] text-white text-sm py-3 rounded-xl text-center hover:bg-[#1A3FAA] transition font-medium">
+      Ver meus pedidos
+    </a>
+    <a href="{% url 'clientes:logout' %}" class="flex-1 border border-gray-200 text-gray-600 text-sm py-3 rounded-xl text-center hover:bg-gray-50 transition">
+      Sair
+    </a>
+  </div>
+
+</div>
+{% endblock %}
