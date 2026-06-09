@@ -1,0 +1,56 @@
+<div class="bg-white rounded-2xl border border-gray-100 p-6 mb-4"
+     id="pedido-{{ pedido.id }}"
+     hx-get="/status/{{ pedido.id }}/"
+     hx-trigger="every 15s"
+     hx-swap="outerHTML">
+
+  <div class="flex items-center justify-between mb-4">
+    <div>
+      <p class="font-semibold text-gray-800">Pedido #{{ pedido.id }}</p>
+      <p class="text-xs text-gray-400 mt-0.5">{{ pedido.criado_em|date:"d/m/Y H:i" }}</p>
+    </div>
+    <span class="text-xs px-3 py-1 rounded-full font-medium
+      {% if pedido.status == 'pendente' %}bg-yellow-100 text-yellow-700
+      {% elif pedido.status == 'confirmado' %}bg-blue-100 text-blue-700
+      {% elif pedido.status == 'em_entrega' %}bg-purple-100 text-purple-700
+      {% elif pedido.status == 'entregue' %}bg-green-100 text-green-700
+      {% else %}bg-red-100 text-red-700{% endif %}">
+      {{ pedido.get_status_display }}
+    </span>
+  </div>
+
+  <!-- Barra de progresso -->
+  <div class="flex items-center mb-5">
+    {% for step in progress_steps %}
+    <div class="flex flex-col items-center flex-1 relative">
+      <div class="w-6 h-6 rounded-full flex items-center justify-center text-xs z-10
+        {% if step.done %}bg-[#29AADF] text-white
+        {% elif step.active %}bg-[#1A3FAA] text-white
+        {% else %}bg-gray-100 border border-gray-200 text-gray-400{% endif %}">
+        <i class="ti ti-{{ step.icon }}"></i>
+      </div>
+      {% if not forloop.last %}
+      <div class="absolute top-3 left-1/2 w-full h-px {% if step.done %}bg-[#29AADF]{% else %}bg-gray-200{% endif %} z-0"></div>
+      {% endif %}
+      <p class="text-xs text-gray-400 mt-1 text-center">{{ step.label }}</p>
+    </div>
+    {% endfor %}
+  </div>
+
+  <!-- Itens -->
+  {% for item in pedido.itens.all %}
+  <div class="flex justify-between items-center py-2 border-b border-gray-50 last:border-0">
+    <div>
+      <p class="text-sm text-gray-700">{{ item.produto.nome }}</p>
+      <p class="text-xs text-gray-400">{{ item.quantidade }}x · R$ {{ item.preco_unitario }}</p>
+    </div>
+    <p class="text-sm font-medium text-[#1A3FAA]">R$ {{ item.subtotal }}</p>
+  </div>
+  {% endfor %}
+
+  <div class="flex justify-between items-center pt-3 mt-2">
+    <span class="text-xs text-gray-500">{{ pedido.get_forma_pagamento_display }} · {{ pedido.get_forma_recebimento_display }}</span>
+    <span class="font-bold text-[#1A3FAA]">R$ {{ pedido.total }}</span>
+  </div>
+
+</div>

@@ -7,6 +7,15 @@ from .models import Pedido, ItemPedido
 from django.core.mail import send_mail
 from django.conf import settings
 
+def login_cliente_required(view_func):
+    def wrapper(request, *args, **kwargs):
+        if not request.session.get('cliente_id'):
+            request.session['next'] = request.path
+            return redirect('clientes:login')
+        return view_func(request, *args, **kwargs)
+    return wrapper
+
+@login_cliente_required
 def carrinho_detalhe(request):
     carrinho = Carrinho(request)
     context = {
@@ -107,6 +116,7 @@ def enviar_email_pedido(pedido):
     thread.daemon = True
     thread.start()
 
+@login_cliente_required
 def checkout(request):
     carrinho = Carrinho(request)
 
@@ -140,6 +150,7 @@ def checkout(request):
             forma_recebimento=forma_recebimento,
             forma_pagamento=forma_pagamento,
             total=carrinho.total(),
+            cliente_id=request.session.get('cliente_id'),
         )
 
         for item in carrinho:
@@ -170,16 +181,53 @@ def confirmacao(request, pedido_id):
     pedido = get_object_or_404(Pedido, id=pedido_id)
     return render(request, 'pedidos/confirmacao.html', {'pedido': pedido})
 
+def get_progress_steps(status):
+    ordem = ['pendente', 'confirmado', 'em_entrega', 'entregue']
+    icones = {
+        'pendente': 'clock',
+        'confirmado': 'check',
+        'em_entrega': 'truck',
+        'entregue': 'home',
+    }
+    labels = {
+        'pendente': 'Pendente',
+        'confirmado': 'Confirmado',
+        'em_entrega': 'Em entrega',
+        'entregue': 'Entregue',
+    }
+    try:
+        idx_atual = ordem.index(status)
+    except ValueError:
+        idx_atual = -1
+
+    steps = []
+    for i, step in enumerate(ordem):
+        steps.append({
+            'label': labels[step],
+            'icon': icones[step],
+            'done': i < idx_atual,
+            'active': i == idx_atual,
+        })
+    return steps
+
+
+@login_cliente_required
 def meus_pedidos(request):
-    pedidos = []
-    telefone = ''
-
-    if request.method == 'POST':
-        telefone = request.POST.get('telefone', '').strip()
-        if telefone:
-            pedidos = Pedido.objects.filter(telefone=telefone).order_by('-criado_em')
-
+    cliente_id = request.session.get('cliente_id')
+    pedidos = Pedido.objects.filter(cliente_id=cliente_id).order_by('-criado_em')
+    pedidos_com_steps = [
+        {'pedido': p, 'progress_steps': get_progress_steps(p.status)}
+        for p in pedidos
+    ]
     return render(request, 'pedidos/meus_pedidos.html', {
-        'pedidos': pedidos,
-        'telefone': telefone,
+        'pedidos_com_steps': pedidos_com_steps,
+    })
+
+
+def pedido_status(request, pedido_id):
+    cliente_id = request.session.get('cliente_id')
+    pedido = get_object_or_404(Pedido, id=pedido_id, cliente_id=cliente_id)
+    return render(request, 'pedidos/partials/pedido_card.html', {
+        'pedido': pedido,
+        'progress_steps': get_progress_steps(pedido.status),
     })

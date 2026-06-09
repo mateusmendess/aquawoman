@@ -8,70 +8,20 @@
 
   <h1 class="text-xl font-semibold text-gray-800 mb-6">📦 Meus Pedidos</h1>
 
-  <!-- Busca por telefone -->
-  <div class="bg-white rounded-2xl border border-gray-100 p-6 mb-6">
-    <p class="text-sm text-gray-600 mb-4">Digite seu telefone para ver seus pedidos:</p>
-    <form method="POST" class="flex gap-3">
-      {% csrf_token %}
-      <input
-        type="text"
-        name="telefone"
-        value="{{ telefone }}"
-        placeholder="(94) 9 0000-0000"
-        required
-        class="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#29AADF]">
-      <button type="submit"
-        class="bg-[#29AADF] text-white text-sm px-5 py-2 rounded-lg hover:bg-[#1A3FAA] transition">
-        Buscar
-      </button>
-    </form>
-  </div>
-
-  <!-- Resultados -->
-  {% if telefone %}
-    {% if pedidos %}
-      {% for pedido in pedidos %}
-      <div class="bg-white rounded-2xl border border-gray-100 p-6 mb-4">
-        <div class="flex items-center justify-between mb-4">
-          <div>
-            <p class="font-semibold text-gray-800">Pedido #{{ pedido.id }}</p>
-            <p class="text-xs text-gray-400 mt-0.5">{{ pedido.criado_em|date:"d/m/Y H:i" }}</p>
-          </div>
-          <span class="text-xs px-3 py-1 rounded-full font-medium
-            {% if pedido.status == 'pendente' %}bg-yellow-100 text-yellow-700
-            {% elif pedido.status == 'confirmado' %}bg-blue-100 text-blue-700
-            {% elif pedido.status == 'em_entrega' %}bg-purple-100 text-purple-700
-            {% elif pedido.status == 'entregue' %}bg-green-100 text-green-700
-            {% else %}bg-red-100 text-red-700{% endif %}">
-            {{ pedido.get_status_display }}
-          </span>
-        </div>
-
-        <!-- Itens -->
-        {% for item in pedido.itens.all %}
-        <div class="flex justify-between items-center py-2 border-b border-gray-50 last:border-0">
-          <div>
-            <p class="text-sm text-gray-700">{{ item.produto.nome }}</p>
-            <p class="text-xs text-gray-400">{{ item.quantidade }}x · R$ {{ item.preco_unitario }}</p>
-          </div>
-          <p class="text-sm font-medium text-[#1A3FAA]">R$ {{ item.subtotal }}</p>
-        </div>
-        {% endfor %}
-
-        <!-- Total e pagamento -->
-        <div class="flex justify-between items-center pt-3 mt-2">
-          <span class="text-xs text-gray-500">{{ pedido.get_forma_pagamento_display }}</span>
-          <span class="font-bold text-[#1A3FAA]">R$ {{ pedido.total }}</span>
-        </div>
-      </div>
-      {% endfor %}
-
-    {% else %}
-      <div class="bg-white rounded-2xl border border-gray-100 p-12 text-center">
-        <p class="text-4xl mb-3">🔍</p>
-        <p class="text-gray-500 text-sm">Nenhum pedido encontrado para este telefone.</p>
-      </div>
-    {% endif %}
+  {% if pedidos_com_steps %}
+    {% for item in pedidos_com_steps %}
+      {% with pedido=item.pedido progress_steps=item.progress_steps %}
+        {% include 'pedidos/partials/pedido_card.html' %}
+      {% endwith %}
+    {% endfor %}
+  {% else %}
+    <div class="bg-white rounded-2xl border border-gray-100 p-12 text-center">
+      <p class="text-4xl mb-3">📦</p>
+      <p class="text-gray-500 text-sm mb-4">Você ainda não fez nenhum pedido.</p>
+      <a href="/produtos/" class="bg-[#29AADF] text-white text-sm px-6 py-2 rounded-xl hover:bg-[#1A3FAA] transition">
+        Ver produtos
+      </a>
+    </div>
   {% endif %}
 
 </div>
