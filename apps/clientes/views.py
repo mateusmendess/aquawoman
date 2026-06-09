@@ -65,6 +65,7 @@ def minha_conta(request):
 
 def logout_view(request):
     request.session.flush()
+    messages.success(request, 'Você saiu da conta.')
     return redirect('/')
 
 def editar_conta(request):

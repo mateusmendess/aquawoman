@@ -26,6 +26,11 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/htmx.org@1.9.10"></script>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+  <style>
+    .msg-success { color: #166534; }
+    .msg-error { color: #991b1b; }
+    .msg-info { color: #1e40af; }
+  </style>
   <script>
     tailwind.config = {
       theme: {
@@ -81,16 +86,14 @@
   </nav>
 
   {% if messages %}
-  <div class="max-w-6xl mx-auto px-4 mt-4">
-    {% for message in messages %}
-    <div class="p-3 rounded-lg mb-2 text-sm
-      {% if message.tags == 'success' %}bg-green-100 text-green-800
-      {% elif message.tags == 'error' %}bg-red-100 text-red-800
-      {% else %}bg-blue-100 text-blue-800{% endif %}">
+  {% for message in messages %}
+  <div class="django-message" data-type="{{ message.tags }}" style="display:none; position:fixed; top:24px; left:50%; transform:translateX(-50%); min-width:280px; max-width:400px; background:white; border-radius:16px; box-shadow:0 10px 30px rgba(0,0,0,0.15); border:1px solid #f3f4f6; padding:16px 20px; text-align:center; z-index:9998;">
+    <div style="font-size:13px; font-weight:500;" class="{% if message.tags == 'success' %}msg-success{% elif message.tags == 'error' %}msg-error{% else %}msg-info{% endif %}">
+      {% if message.tags == 'success' %}✅{% elif message.tags == 'error' %}❌{% else %}ℹ️{% endif %}
       {{ message }}
     </div>
-    {% endfor %}
   </div>
+  {% endfor %}
   {% endif %}
 
   <main class="flex-1 flex flex-col w-full">
@@ -109,7 +112,7 @@
     </div>
   </footer>
 
-  <!-- Popup de confirmação -->
+  <!-- Toast carrinho -->
   <div id="toast" style="display:none; position:fixed; top:24px; left:50%; transform:translateX(-50%); width:280px; background:white; border-radius:16px; box-shadow:0 10px 30px rgba(0,0,0,0.15); border:1px solid #f3f4f6; padding:20px; text-align:center; z-index:9999;">
     <div style="font-size:28px; margin-bottom:8px;">🛒</div>
     <div style="font-weight:600; color:#1f2937; margin-bottom:4px;">Produto adicionado!</div>
@@ -129,5 +132,26 @@
     }
   });
   </script>
+
+  <script>
+  (function() {
+    var messages = document.querySelectorAll('.django-message');
+    var delay = 0;
+    messages.forEach(function(msg) {
+      setTimeout(function() {
+        msg.style.display = 'block';
+        var duration = msg.dataset.type === 'error' ? 5000 : 3000;
+        setTimeout(function() {
+          msg.style.opacity = '1';
+          msg.style.transition = 'opacity 0.5s';
+          setTimeout(function() { msg.style.opacity = '0'; }, duration);
+          setTimeout(function() { msg.style.display = 'none'; }, duration + 500);
+        }, 100);
+      }, delay);
+      delay += 200;
+    });
+  })();
+  </script>
+
 </body>
 </html>
