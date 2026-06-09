@@ -14,7 +14,7 @@ def cadastro(request):
             messages.error(request, 'Este email já está cadastrado.')
             return render(request, 'clientes/cadastro.html')
 
-        Cliente.objects.create(
+        cliente: Cliente = Cliente.objects.create(
             nome=nome,
             email=email,
             telefone=telefone,
@@ -22,7 +22,7 @@ def cadastro(request):
         )
 
         request.session['cliente_id'] = cliente.id
-        request.session['cliente_nome'] = cliente.nome
+        request.session['cliente_nome'] = cliente.nome.split()[0]
         messages.success(request, f'Bem-vindo, {cliente.nome}!')
         return redirect('/')
         
@@ -38,7 +38,7 @@ def login_view(request):
             cliente = Cliente.objects.get(email=email)
             if check_password(senha, cliente.senha_hash):
                 request.session['cliente_id'] = cliente.id
-                request.session['cliente_nome'] = cliente.nome
+                request.session['cliente_nome'] = cliente.nome.split()[0]
                 messages.success(request, f'Bem-vindo, {cliente.nome}!')
                 next_url = request.session.pop('next', '/')
                 return redirect(next_url)
