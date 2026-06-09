@@ -4,10 +4,10 @@
      hx-trigger="every 15s"
      hx-swap="outerHTML">
 
-  <div class="flex items-center justify-between mb-4">
+  <div class="flex items-center justify-between mb-1">
     <div>
       <p class="font-semibold text-gray-800">Pedido #{{ pedido.id }}</p>
-      <p class="text-xs text-gray-400 mt-0.5">{{ pedido.criado_em|date:"d/m/Y H:i" }}</p>
+      <p class="text-xs text-gray-400 mt-1">{{ pedido.criado_em|date:"d/m/Y H:i" }}</p>
     </div>
     <span class="text-xs px-3 py-1 rounded-full font-medium
       {% if pedido.status == 'pendente' %}bg-yellow-100 text-yellow-700
@@ -20,33 +20,35 @@
   </div>
 
   <!-- Barra de progresso -->
-  <div class="flex items-center mb-5">
+  <div class="flex items-start my-5">
     {% for step in progress_steps %}
     <div class="flex flex-col items-center flex-1 relative">
-      <div class="w-6 h-6 rounded-full flex items-center justify-center text-xs z-10
+      <div class="w-7 h-7 rounded-full flex items-center justify-center text-xs z-10
         {% if step.done %}bg-[#29AADF] text-white
         {% elif step.active %}bg-[#1A3FAA] text-white
         {% else %}bg-gray-100 border border-gray-200 text-gray-400{% endif %}">
         <i class="ti ti-{{ step.icon }}"></i>
       </div>
       {% if not forloop.last %}
-      <div class="absolute top-3 left-1/2 w-full h-px {% if step.done %}bg-[#29AADF]{% else %}bg-gray-200{% endif %} z-0"></div>
+      <div class="absolute top-3.5 left-1/2 w-full h-px {% if step.done %}bg-[#29AADF]{% else %}bg-gray-200{% endif %} z-0" style="left: calc(50% + 14px); right: calc(-50% + 14px); width: auto;"></div>
       {% endif %}
-      <p class="text-xs text-gray-400 mt-1 text-center">{{ step.label }}</p>
+      <p style="font-size: 11px; color: #9ca3af; margin-top: 6px; text-align: center; line-height: 1.3; min-width: 60px;">{{ step.label }}</p>
     </div>
     {% endfor %}
   </div>
 
   <!-- Itens -->
-  {% for item in pedido.itens.all %}
-  <div class="flex justify-between items-center py-2 border-b border-gray-50 last:border-0">
-    <div>
-      <p class="text-sm text-gray-700">{{ item.produto.nome }}</p>
-      <p class="text-xs text-gray-400">{{ item.quantidade }}x · R$ {{ item.preco_unitario }}</p>
+  <div class="border-t border-gray-50 pt-3">
+    {% for item in pedido.itens.all %}
+    <div class="flex justify-between items-center py-2 border-b border-gray-50 last:border-0">
+      <div>
+        <p class="text-sm text-gray-700">{{ item.produto.nome }}</p>
+        <p class="text-xs text-gray-400">{{ item.quantidade }}x · R$ {{ item.preco_unitario }}</p>
+      </div>
+      <p class="text-sm font-medium text-[#1A3FAA]">R$ {{ item.subtotal }}</p>
     </div>
-    <p class="text-sm font-medium text-[#1A3FAA]">R$ {{ item.subtotal }}</p>
+    {% endfor %}
   </div>
-  {% endfor %}
 
   <div class="flex justify-between items-center pt-3 mt-2">
     <span class="text-xs text-gray-500">{{ pedido.get_forma_pagamento_display }} · {{ pedido.get_forma_recebimento_display }}</span>
