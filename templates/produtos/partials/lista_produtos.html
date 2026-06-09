@@ -4,9 +4,9 @@
   {% for grupo in categorias_com_produtos %}
   <div class="mb-8">
     <h2 class="text-base font-semibold text-gray-700 mb-4">{{ grupo.categoria.icone }} {{ grupo.categoria.nome }}</h2>
-    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+    <div class="flex flex-wrap gap-4">
       {% for produto in grupo.produtos %}
-      <div class="bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition p-4 relative">
+      <div class="bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition p-4 relative flex flex-col" style="width: 200px; flex-shrink: 0;">
         {% if produto.destaque %}
         <span class="absolute -top-3 right-3 bg-yellow-400 text-white text-xs px-2 py-0.5 rounded-full shadow-sm">⭐ Destaque</span>
         {% endif %}
@@ -19,14 +19,14 @@
         {% endif %}
         <p class="text-sm font-medium text-gray-800">{{ produto.nome }}</p>
         <p class="text-xs text-gray-400 mb-2">{{ produto.descricao }}</p>
-        <div class="flex items-center justify-between mt-2">
-          <p class="text-[#1A3FAA] font-semibold">R$ {{ produto.preco|floatformat:2 }}</p>
+        <div class="mt-auto pt-2">
+          <p class="text-[#1A3FAA] font-semibold mb-2">R$ {{ produto.preco|floatformat:2 }}</p>
           <button
             hx-post="{% url 'pedidos:carrinho_adicionar' produto.id %}"
             hx-target="#carrinho-contador"
             hx-swap="outerHTML"
             hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
-            class="bg-[#29AADF] text-white text-xs px-3 py-1.5 rounded-lg hover:bg-[#1A3FAA] transition">
+            class="w-full bg-[#29AADF] text-white text-xs px-3 py-1.5 rounded-lg hover:bg-[#1A3FAA] transition">
             + Carrinho
           </button>
         </div>
@@ -37,9 +37,9 @@
   {% endfor %}
 
 {% else %}
-  <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+  <div class="flex flex-wrap gap-4">
     {% for produto in produtos %}
-    <div class="bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition p-4 relative">
+    <div class="bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition p-4 relative flex flex-col" style="width: 200px; flex-shrink: 0;">
       {% if produto.destaque %}
       <span class="absolute -top-3 right-3 bg-yellow-400 text-white text-xs px-2 py-0.5 rounded-full shadow-sm">⭐ Destaque</span>
       {% endif %}
@@ -52,20 +52,20 @@
       {% endif %}
       <p class="text-sm font-medium text-gray-800">{{ produto.nome }}</p>
       <p class="text-xs text-gray-400 mb-2">{{ produto.descricao }}</p>
-      <div class="flex items-center justify-between mt-2">
-        <p class="text-[#1A3FAA] font-semibold">R$ {{ produto.preco|floatformat:2 }}</p>
+      <div class="mt-auto pt-2">
+        <p class="text-[#1A3FAA] font-semibold mb-2">R$ {{ produto.preco|floatformat:2 }}</p>
         <button
           hx-post="{% url 'pedidos:carrinho_adicionar' produto.id %}"
           hx-target="#carrinho-contador"
           hx-swap="outerHTML"
           hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
-          class="bg-[#29AADF] text-white text-xs px-3 py-1.5 rounded-lg hover:bg-[#1A3FAA] transition">
+          class="w-full bg-[#29AADF] text-white text-xs px-3 py-1.5 rounded-lg hover:bg-[#1A3FAA] transition">
           + Carrinho
         </button>
       </div>
     </div>
     {% empty %}
-    <div class="col-span-4 text-center py-12 text-gray-400">
+    <div class="w-full text-center py-12 text-gray-400">
       <p class="text-4xl mb-3">🔍</p>
       <p class="text-sm">Nenhum produto encontrado nessa categoria.</p>
     </div>
