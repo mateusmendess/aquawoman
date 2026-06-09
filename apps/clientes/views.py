@@ -20,9 +20,12 @@ def cadastro(request):
             telefone=telefone,
             senha_hash=make_password(senha),
         )
-        messages.success(request, 'Conta criada com sucesso! Faça login.')
-        return redirect('clientes:login')
 
+        request.session['cliente_id'] = cliente.id
+        request.session['cliente_nome'] = cliente.nome
+        messages.success(request, f'Bem-vindo, {cliente.nome}!')
+        return redirect('/')
+        
     return render(request, 'clientes/cadastro.html')
 
 
@@ -37,7 +40,8 @@ def login_view(request):
                 request.session['cliente_id'] = cliente.id
                 request.session['cliente_nome'] = cliente.nome
                 messages.success(request, f'Bem-vindo, {cliente.nome}!')
-                return redirect('/')
+                next_url = request.session.pop('next', '/')
+                return redirect(next_url)
             else:
                 messages.error(request, 'Senha incorreta.')
         except Cliente.DoesNotExist:
