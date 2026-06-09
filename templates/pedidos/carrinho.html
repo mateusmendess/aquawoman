@@ -14,14 +14,13 @@
     </div>
   </div>
 
-  <div class="flex gap-3">
-    <a href="/produtos/" class="flex-1 border border-[#29AADF] text-[#1A3FAA] text-sm py-3 rounded-xl text-center hover:bg-blue-50 transition">
+  <div class="flex flex-col gap-2">
+    <a href="{% url 'pedidos:checkout' %}" class="w-full bg-[#29AADF] text-white text-sm py-2.5 rounded-xl text-center hover:bg-[#1A3FAA] transition font-medium">
+      Finalizar pedido →
+    </a>
+    <a href="/produtos/" class="w-full border border-[#29AADF] text-[#1A3FAA] text-sm py-2.5 rounded-xl text-center hover:bg-blue-50 transition">
       Continuar comprando
     </a>
-    <a href="{% url 'pedidos:checkout' %}" class="flex-1 bg-[#29AADF] text-white text-sm py-3 rounded-xl text-center hover:bg-[#1A3FAA] transition font-medium">
-        Finalizar pedido →
-    </a>
   </div>
-
 </div>
 {% endblock %}

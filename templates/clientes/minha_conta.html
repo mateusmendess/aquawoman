@@ -26,16 +26,18 @@
     </div>
   </div>
 
-  <div class="flex gap-3">
-    <a href="/meus-pedidos/" class="flex-1 bg-[#29AADF] text-white text-sm py-3 rounded-xl text-center hover:bg-[#1A3FAA] transition font-medium">
+  <div class="flex flex-col gap-2">
+    <a href="/meus-pedidos/" class="w-full bg-[#29AADF] text-white text-sm py-2.5 rounded-xl text-center hover:bg-[#1A3FAA] transition font-medium">
       Ver meus pedidos
     </a>
-    <a href="{% url 'clientes:editar_conta' %}" class="flex-1 border border-gray-200 text-gray-600 text-sm py-3 rounded-xl text-center hover:bg-gray-50 transition">
-      Editar dados
-    </a>
-    <a href="{% url 'clientes:logout' %}" class="flex-1 border border-gray-200 text-gray-600 text-sm py-3 rounded-xl text-center hover:bg-gray-50 transition">
-      Sair
-    </a>
+    <div class="flex gap-2">
+      <a href="{% url 'clientes:editar_conta' %}" class="flex-1 border border-gray-200 text-gray-600 text-sm py-2.5 rounded-xl text-center hover:bg-gray-50 transition">
+        Editar dados
+      </a>
+      <a href="{% url 'clientes:logout' %}" class="flex-1 border border-gray-200 text-gray-600 text-sm py-2.5 rounded-xl text-center hover:bg-gray-50 transition">
+        Sair
+      </a>
+    </div>
   </div>
 
 </div>
