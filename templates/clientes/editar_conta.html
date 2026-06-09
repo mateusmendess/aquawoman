@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Editar Conta — Aquawoman{% endblock %}
+
+{% block content %}
+<div style="max-width: 680px; width: 100%; margin: 0 auto; padding: 48px 16px;">
+  <div class="bg-white rounded-2xl border border-gray-100 p-8">
+
+    <div class="mb-6">
+      <h1 class="text-xl font-semibold text-gray-800 mb-1">Editar dados</h1>
+      <p class="text-sm text-gray-500">O email não pode ser alterado.</p>
+    </div>
+
+    {% if messages %}
+    {% for message in messages %}
+    <div class="p-3 rounded-lg mb-4 text-sm
+      {% if message.tags == 'error' %}bg-red-100 text-red-800{% else %}bg-green-100 text-green-800{% endif %}">
+      {{ message }}
+    </div>
+    {% endfor %}
+    {% endif %}
+
+    <form method="POST">
+      {% csrf_token %}
+
+      <div class="mb-4">
+        <label class="text-xs text-gray-500 mb-1 block">Nome completo</label>
+        <input type="text" name="nome"
+          class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"
+          value="{{ cliente.nome }}">
+      </div>
+
+      <div class="mb-4">
+        <label class="text-xs text-gray-500 mb-1 block">Email</label>
+        <input type="email" disabled
+          class="w-full border border-gray-100 rounded-lg px-3 py-2 text-sm bg-gray-50 text-gray-400 cursor-not-allowed"
+          value="{{ cliente.email }}">
+      </div>
+
+      <div class="mb-6">
+        <label class="text-xs text-gray-500 mb-1 block">Telefone / WhatsApp</label>
+        <input type="text" name="telefone"
+          class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"
+          value="{{ cliente.telefone }}">
+      </div>
+
+      <div class="border-t border-gray-100 pt-6 mb-4">
+        <p class="text-xs font-semibold text-gray-700 mb-4">Alterar senha <span class="text-gray-400 font-normal">(opcional)</span></p>
+        <div class="mb-4">
+          <label class="text-xs text-gray-500 mb-1 block">Senha atual</label>
+          <input type="password" name="senha_atual"
+            class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"
+            placeholder="••••••••">
+        </div>
+        <div class="mb-6">
+          <label class="text-xs text-gray-500 mb-1 block">Nova senha</label>
+          <input type="password" name="senha_nova"
+            class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"
+            placeholder="••••••••">
+        </div>
+      </div>
+
+      <div class="flex gap-3">
+        <a href="{% url 'clientes:minha_conta' %}"
+          class="flex-1 border border-gray-200 text-gray-600 text-sm py-3 rounded-xl text-center hover:bg-gray-50 transition">
+          Cancelar
+        </a>
+        <button type="submit"
+          class="flex-1 bg-[#29AADF] text-white text-sm py-3 rounded-xl font-medium hover:bg-[#1A3FAA] transition">
+          Salvar alterações
+        </button>
+      </div>
+
+    </form>
+  </div>
+</div>
+{% endblock %}

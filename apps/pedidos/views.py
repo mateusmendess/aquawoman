@@ -6,6 +6,7 @@ from .carrinho import Carrinho
 from .models import Pedido, ItemPedido
 from django.core.mail import send_mail
 from django.conf import settings
+from apps.clientes.models import Cliente
 
 def login_cliente_required(view_func):
     def wrapper(request, *args, **kwargs):
@@ -123,6 +124,8 @@ def checkout(request):
     if len(carrinho) == 0:
         messages.error(request, 'Seu carrinho está vazio!')
         return redirect('produtos:lista')
+    
+    cliente = Cliente.objects.get(id=request.session['cliente_id'])
 
     if request.method == 'POST':
         nome = request.POST.get('nome')
@@ -174,6 +177,7 @@ def checkout(request):
     context = {
         'carrinho': carrinho,
         'total': carrinho.total(),
+        'cliente': cliente,
     }
     return render(request, 'pedidos/checkout.html', context)
 
