@@ -4,13 +4,22 @@
 {% block title %}Criar conta — Aquawoman{% endblock %}
 
 {% block content %}
-<div class="max-w-xl mx-auto px-4 py-12"></div>
+<div style="max-width: 680px; width: 100%; margin: 0 auto; padding: 48px 16px;">
   <div class="bg-white rounded-2xl border border-gray-100 p-8">
 
     <div class="text-center mb-6">
       <h1 class="text-xl font-semibold text-gray-800 mb-1">Criar conta</h1>
       <p class="text-sm text-gray-500">Rápido e gratuito</p>
     </div>
+
+    {% if messages %}
+    {% for message in messages %}
+    <div class="p-3 rounded-lg mb-4 text-sm
+      {% if message.tags == 'error' %}bg-red-100 text-red-800{% else %}bg-green-100 text-green-800{% endif %}">
+      {{ message }}
+    </div>
+    {% endfor %}
+    {% endif %}
 
     <form method="POST">
       {% csrf_token %}
