@@ -67,13 +67,14 @@
           <div id="mapa-checkout" style="height: 220px; border-radius: 8px; border: 1px solid #e5e7eb; margin-bottom: 8px; z-index: 0;"></div>
           <p class="text-xs text-gray-400 mb-2">
             <i class="ti ti-info-circle" style="font-size:13px; vertical-align:-2px;" aria-hidden="true"></i>
-            Clique no mapa para definir o local de entrega
+            Clique no mapa para definir o local, ou digite o bairro e pressione Enter
           </p>
-          <textarea name="endereco" id="input-endereco" rows="2"
+          <input type="text" name="endereco" id="input-endereco"
             class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"
-            placeholder="Rua, número, bairro, cidade">{{ cliente.endereco }}</textarea>
+            placeholder="Rua, número, bairro, cidade"
+            value="{{ cliente.endereco }}">
         </div>
-        
+
         <!-- Endereço da loja -->
         <div class="mb-4 hidden bg-blue-50 border border-blue-200 rounded-xl p-3" id="box-retirada">
           <p class="text-xs font-semibold text-blue-800 mb-1">📍 Endereço para retirada:</p>
@@ -162,55 +163,65 @@ var markerCheckout = null;
 
 function iniciarMapaCheckout() {
   if (mapaCheckout) return;
-  var lat = -6.0665, lng = -49.8661;
-  mapaCheckout = L.map('mapa-checkout').setView([lat, lng], 14);
+  var mapaLat = {{ cliente_lat }}, mapaLng = {{ cliente_lng }};
+  mapaCheckout = L.map('mapa-checkout').setView([mapaLat, mapaLng], 14);
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '© OpenStreetMap'
   }).addTo(mapaCheckout);
 
+  // Se cliente já tem localização, mostra o pin
+  {% if cliente.latitude and cliente.longitude %}
+  markerCheckout = L.marker([{{ cliente_lat }}, {{ cliente_lng }}]).addTo(mapaCheckout);
+  {% endif %}
+
   mapaCheckout.on('click', function(e) {
     var latlng = e.latlng;
-    if (markerCheckout) {
-      markerCheckout.setLatLng(latlng);
-    } else {
-      markerCheckout = L.marker(latlng).addTo(mapaCheckout);
-    }
-
-    document.getElementById('input-latitude').value = latlng.lat.toFixed(6);
-    document.getElementById('input-longitude').value = latlng.lng.toFixed(6);
+    if (markerCheckout) { markerCheckout.setLatLng(latlng); }
+    else { markerCheckout = L.marker(latlng).addTo(mapaCheckout); }
 
     fetch('https://nominatim.openstreetmap.org/reverse?format=json&lat=' + latlng.lat + '&lon=' + latlng.lng)
       .then(function(r) { return r.json(); })
       .then(function(data) {
-        var endereco = data.display_name || '';
-        document.getElementById('input-endereco').value = endereco;
+        document.getElementById('input-endereco').value = data.display_name || '';
       });
+
+    fetch('/salvar-localizacao/', {
+      method: 'POST',
+      headers: {'X-CSRFToken': '{{ csrf_token }}', 'Content-Type': 'application/json'},
+      body: JSON.stringify({lat: latlng.lat, lng: latlng.lng})
+    });
+  });
+
+  document.getElementById('input-endereco').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      var val = this.value.trim().split(',')[0];
+      if (val.length < 5) return;
+      fetch('/geocodificar/?q=' + encodeURIComponent(val + ', Parauapebas'))
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          if (data && data.length > 0) {
+            var lat = parseFloat(data[0].lat);
+            var lng = parseFloat(data[0].lon);
+            if (markerCheckout) { markerCheckout.setLatLng([lat, lng]); }
+            else { markerCheckout = L.marker([lat, lng]).addTo(mapaCheckout); }
+            mapaCheckout.setView([lat, lng], 16);
+          }
+        })
+        .catch(function() {});
+    }
   });
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-  var campoEndereco = document.getElementById('campo-endereco');
-  if (campoEndereco && !campoEndereco.classList.contains('hidden')) {
-    setTimeout(iniciarMapaCheckout, 100);
-  }
+  setTimeout(iniciarMapaCheckout, 100);
 });
-
-var _selecionarRecebimentoOriginal = selecionarRecebimento;
-selecionarRecebimento = function(el, tipo) {
-  _selecionarRecebimentoOriginal(el, tipo);
-  if (tipo === 'entrega') {
-    setTimeout(function() {
-      iniciarMapaCheckout();
-      if (mapaCheckout) mapaCheckout.invalidateSize();
-    }, 100);
-  }
-};
 </script>
 
 <script>
-let tipoRecebimento = 'entrega';
-let tipoPagamento = 'dinheiro';
-let tipoQuando = 'depois';
+var tipoRecebimento = 'entrega';
+var tipoPagamento = 'dinheiro';
+var tipoQuando = 'depois';
 
 function atualizarBotaoCheckout() {
   const btn = document.getElementById('btn-confirmar');
@@ -260,7 +271,14 @@ function selecionarRecebimento(el, tipo) {
   document.getElementById('quando-lbl').textContent = tipo === 'entrega' ? 'Na entrega' : 'Na retirada';
   document.getElementById('input-endereco').required = tipo === 'entrega';
   atualizarBotaoCheckout();
+  if (tipo === 'entrega') {
+    setTimeout(function() {
+      iniciarMapaCheckout();
+      if (mapaCheckout) mapaCheckout.invalidateSize();
+    }, 100);
+  }
 }
+
 
 function selecionarPagamento(el, tipo) {
   document.querySelectorAll('.ck-pay').forEach(p => p.classList.remove('active'));

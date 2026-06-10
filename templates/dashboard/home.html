@@ -147,6 +147,10 @@
         <p style="font-size:11px; color:#9ca3af; margin:0 0 2px;">Tempo estimado</p>
         <p id="modal-tempo" style="font-size:15px; font-weight:500; color:#1f2937; margin:0;">—</p>
       </div>
+      <div style="flex:1; background:#f9fafb; border-radius:10px; padding:10px; text-align:center;">
+        <p style="font-size:11px; color:#9ca3af; margin:0 0 2px;">Navegação</p>
+        <a id="modal-gmaps" href="#" target="_blank" style="font-size:13px; font-weight:500; color:#29AADF; text-decoration:none;">Google Maps →</a>
+      </div>
     </div>
   </div>
 </div>
@@ -208,6 +212,11 @@ function abrirMapa(pedidoId, nome, endereco) {
                 L.geoJSON(route.geometry, {
                   style: { color: '#29AADF', weight: 4, opacity: 0.8 }
                 }).addTo(mapaPainel);
+
+                // Link Google Maps
+                document.getElementById('modal-gmaps').href = 
+                  'https://www.google.com/maps/dir/' + LOJA_LAT + ',' + LOJA_LNG + '/' + lat + ',' + lng;
+                  
               }
             });
         }

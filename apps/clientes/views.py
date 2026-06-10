@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth.hashers import make_password, check_password
 from .models import Cliente
+import json as json_lib
 
 def cadastro(request):
     if request.method == 'POST':
@@ -102,3 +103,15 @@ def editar_conta(request):
         return redirect('clientes:minha_conta')
 
     return render(request, 'clientes/editar_conta.html', {'cliente': cliente})
+
+def salvar_localizacao(request):
+    if request.method == 'POST':
+        cliente_id = request.session.get('cliente_id')
+        if cliente_id:
+            data = json_lib.loads(request.body)
+            Cliente.objects.filter(id=cliente_id).update(
+                latitude=data.get('lat'),
+                longitude=data.get('lng'),
+            )
+    from django.http import JsonResponse
+    return JsonResponse({'ok': True})
