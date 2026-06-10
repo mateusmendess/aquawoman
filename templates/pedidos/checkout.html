@@ -64,11 +64,16 @@
         <!-- Endereço de entrega -->
         <div class="mb-4" id="campo-endereco">
           <label class="text-xs text-gray-500 mb-1 block">Endereço de entrega</label>
-          <textarea name="endereco" id="input-endereco" rows="3"
+          <div id="mapa-checkout" style="height: 220px; border-radius: 8px; border: 1px solid #e5e7eb; margin-bottom: 8px; z-index: 0;"></div>
+          <p class="text-xs text-gray-400 mb-2">
+            <i class="ti ti-info-circle" style="font-size:13px; vertical-align:-2px;" aria-hidden="true"></i>
+            Clique no mapa para definir o local de entrega
+          </p>
+          <textarea name="endereco" id="input-endereco" rows="2"
             class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"
             placeholder="Rua, número, bairro, cidade">{{ cliente.endereco }}</textarea>
         </div>
-
+        
         <!-- Endereço da loja -->
         <div class="mb-4 hidden bg-blue-50 border border-blue-200 rounded-xl p-3" id="box-retirada">
           <p class="text-xs font-semibold text-blue-800 mb-1">📍 Endereço para retirada:</p>
@@ -151,6 +156,57 @@
 </div>
 
 {% block extra_js %}
+<script>
+var mapaCheckout = null;
+var markerCheckout = null;
+
+function iniciarMapaCheckout() {
+  if (mapaCheckout) return;
+  var lat = -6.0665, lng = -49.8661;
+  mapaCheckout = L.map('mapa-checkout').setView([lat, lng], 14);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap'
+  }).addTo(mapaCheckout);
+
+  mapaCheckout.on('click', function(e) {
+    var latlng = e.latlng;
+    if (markerCheckout) {
+      markerCheckout.setLatLng(latlng);
+    } else {
+      markerCheckout = L.marker(latlng).addTo(mapaCheckout);
+    }
+
+    document.getElementById('input-latitude').value = latlng.lat.toFixed(6);
+    document.getElementById('input-longitude').value = latlng.lng.toFixed(6);
+
+    fetch('https://nominatim.openstreetmap.org/reverse?format=json&lat=' + latlng.lat + '&lon=' + latlng.lng)
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        var endereco = data.display_name || '';
+        document.getElementById('input-endereco').value = endereco;
+      });
+  });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  var campoEndereco = document.getElementById('campo-endereco');
+  if (campoEndereco && !campoEndereco.classList.contains('hidden')) {
+    setTimeout(iniciarMapaCheckout, 100);
+  }
+});
+
+var _selecionarRecebimentoOriginal = selecionarRecebimento;
+selecionarRecebimento = function(el, tipo) {
+  _selecionarRecebimentoOriginal(el, tipo);
+  if (tipo === 'entrega') {
+    setTimeout(function() {
+      iniciarMapaCheckout();
+      if (mapaCheckout) mapaCheckout.invalidateSize();
+    }, 100);
+  }
+};
+</script>
+
 <script>
 let tipoRecebimento = 'entrega';
 let tipoPagamento = 'dinheiro';

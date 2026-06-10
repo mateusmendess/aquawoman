@@ -52,6 +52,7 @@
               <th class="text-left text-xs text-gray-400 pb-2">Pagamento</th>
               <th class="text-left text-xs text-gray-400 pb-2">Status</th>
               <th class="text-right text-xs text-gray-400 pb-2">Total</th>
+              <th class="text-right text-xs text-gray-400 pb-2"></th>
             </tr>
           </thead>
           <tbody>
@@ -84,10 +85,18 @@
                 </select>
               </td>
               <td class="py-2 text-right font-semibold text-[#1A3FAA]">R$ {{ pedido.total }}</td>
+              <td class="py-2 text-right">
+                {% if pedido.forma_recebimento == 'entrega' and pedido.endereco %}
+                <button onclick="abrirMapa('{{ pedido.id }}', '{{ pedido.nome }}', '{{ pedido.endereco|escapejs }}')"
+                  class="text-xs border border-gray-200 rounded-lg px-2 py-1 hover:bg-gray-50 transition inline-flex items-center gap-1">
+                  <i class="ti ti-map-pin text-xs" aria-hidden="true"></i> Mapa
+                </button>
+                {% endif %}
+              </td>
             </tr>
             {% empty %}
             <tr>
-              <td colspan="5" class="py-8 text-center text-gray-400 text-sm">Nenhum pedido ainda.</td>
+              <td colspan="6" class="py-8 text-center text-gray-400 text-sm">Nenhum pedido ainda.</td>
             </tr>
             {% endfor %}
           </tbody>
@@ -117,4 +126,86 @@
   </div>
 
 </div>
+
+<!-- Modal mapa -->
+<div id="modal-mapa" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4); z-index:9999; align-items:center; justify-content:center;">
+  <div style="background:white; border-radius:16px; width:90%; max-width:560px; overflow:hidden; box-shadow:0 20px 60px rgba(0,0,0,0.2);">
+    <div style="padding:14px 16px; border-bottom:1px solid #f3f4f6; display:flex; justify-content:space-between; align-items:center;">
+      <div>
+        <p id="modal-titulo" style="font-size:14px; font-weight:500; color:#1f2937; margin:0;"></p>
+        <p id="modal-endereco" style="font-size:12px; color:#6b7280; margin:2px 0 0;"></p>
+      </div>
+      <button onclick="fecharMapa()" style="background:none; border:none; cursor:pointer; color:#9ca3af; font-size:20px;">✕</button>
+    </div>
+    <div id="mapa-painel" style="height:260px;"></div>
+    <div style="display:flex; gap:8px; padding:12px 16px;">
+      <div style="flex:1; background:#f9fafb; border-radius:10px; padding:10px; text-align:center;">
+        <p style="font-size:11px; color:#9ca3af; margin:0 0 2px;">Distância</p>
+        <p id="modal-distancia" style="font-size:15px; font-weight:500; color:#1f2937; margin:0;">—</p>
+      </div>
+      <div style="flex:1; background:#f9fafb; border-radius:10px; padding:10px; text-align:center;">
+        <p style="font-size:11px; color:#9ca3af; margin:0 0 2px;">Tempo estimado</p>
+        <p id="modal-tempo" style="font-size:15px; font-weight:500; color:#1f2937; margin:0;">—</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+var mapaPainel = null;
+var LOJA_LAT = -6.066532;
+var LOJA_LNG = -49.866094;
+
+function abrirMapa(pedidoId, nome, endereco) {
+  document.getElementById('modal-mapa').style.display = 'flex';
+  document.getElementById('modal-titulo').textContent = 'Pedido #' + pedidoId + ' — ' + nome;
+  document.getElementById('modal-endereco').textContent = endereco;
+  document.getElementById('modal-distancia').textContent = '—';
+  document.getElementById('modal-tempo').textContent = '—';
+
+  setTimeout(function() {
+    if (mapaPainel) { mapaPainel.remove(); mapaPainel = null; }
+
+    mapaPainel = L.map('mapa-painel').setView([LOJA_LAT, LOJA_LNG], 14);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap'
+    }).addTo(mapaPainel);
+
+    var lojaIcon = L.divIcon({
+      html: '<div style="background:#1A3FAA;color:white;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-size:14px;border:2px solid white;box-shadow:0 2px 6px rgba(0,0,0,0.3);">🏪</div>',
+      iconSize: [28, 28], iconAnchor: [14, 14], className: ''
+    });
+
+    var clienteIcon = L.divIcon({
+      html: '<div style="background:#29AADF;color:white;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-size:14px;border:2px solid white;box-shadow:0 2px 6px rgba(0,0,0,0.3);">📍</div>',
+      iconSize: [28, 28], iconAnchor: [14, 28], className: ''
+    });
+
+    L.marker([LOJA_LAT, LOJA_LNG], {icon: lojaIcon}).addTo(mapaPainel).bindPopup('Aquawoman');
+
+    fetch('https://nominatim.openstreetmap.org/search?format=json&q=' + encodeURIComponent(endereco + ', Parauapebas, Pará'))
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        if (data && data.length > 0) {
+          var lat = parseFloat(data[0].lat);
+          var lng = parseFloat(data[0].lon);
+          L.marker([lat, lng], {icon: clienteIcon}).addTo(mapaPainel).bindPopup('Cliente');
+          var bounds = L.latLngBounds([[LOJA_LAT, LOJA_LNG], [lat, lng]]);
+          mapaPainel.fitBounds(bounds, {padding: [40, 40]});
+          var dist = mapaPainel.distance([LOJA_LAT, LOJA_LNG], [lat, lng]);
+          var km = (dist / 1000).toFixed(1);
+          var min = Math.round(dist / 1000 / 30 * 60);
+          document.getElementById('modal-distancia').textContent = km + ' km';
+          document.getElementById('modal-tempo').textContent = '~' + min + ' min';
+        }
+      });
+  }, 100);
+}
+
+function fecharMapa() {
+  document.getElementById('modal-mapa').style.display = 'none';
+  if (mapaPainel) { mapaPainel.remove(); mapaPainel = null; }
+}
+</script>
+
 {% endblock %}
