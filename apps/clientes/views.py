@@ -88,6 +88,9 @@ def editar_conta(request):
         if telefone:
             cliente.telefone = telefone
 
+        endereco = request.POST.get('endereco', '').strip()
+        cliente.endereco = endereco
+
         if senha_nova:
             if not check_password(senha_atual, cliente.senha_hash):
                 messages.error(request, 'Senha atual incorreta.')

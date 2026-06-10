@@ -4,7 +4,6 @@ from django.contrib import messages
 from apps.produtos.models import Produto
 from .carrinho import Carrinho
 from .models import Pedido, ItemPedido
-from django.core.mail import send_mail
 from django.conf import settings
 from apps.clientes.models import Cliente
 
@@ -165,6 +164,10 @@ def checkout(request):
             )
 
         carrinho.limpar()
+
+        # Atualiza endereço do cliente se foi entrega
+        if forma_recebimento == 'entrega' and endereco:
+            Cliente.objects.filter(id=request.session['cliente_id']).update(endereco=endereco)
 
         if pagamento == 'online':
             return redirect(f'/pagamento/criar/{pedido.id}/')
