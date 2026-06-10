@@ -12,4 +12,5 @@ urlpatterns = [
     path('confirmacao/<int:pedido_id>/', views.confirmacao, name='confirmacao'),
     path('meus-pedidos/', views.meus_pedidos, name='meus_pedidos'),
     path('status/<int:pedido_id>/', views.pedido_status, name='pedido_status'),
+    path('geocodificar/', views.geocodificar, name='geocodificar'),
 ]

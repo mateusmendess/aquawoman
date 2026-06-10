@@ -6,6 +6,12 @@ from .carrinho import Carrinho
 from .models import Pedido, ItemPedido
 from django.conf import settings
 from apps.clientes.models import Cliente
+from django.http import JsonResponse
+import urllib.request
+import urllib.parse
+import json
+import threading
+import resend
 
 def login_cliente_required(view_func):
     def wrapper(request, *args, **kwargs):
@@ -60,9 +66,6 @@ def carrinho_atualizar(request, produto_id):
     })
 
 def enviar_email_pedido(pedido):
-    import threading
-    import resend
-
     itens_texto = ''
     for item in pedido.itens.all():
         itens_texto += f'<li>{item.produto.nome} x{item.quantidade} — R$ {item.subtotal():.2f}</li>'
@@ -83,22 +86,6 @@ def enviar_email_pedido(pedido):
     <br>
     <a href="https://aquawoman.up.railway.app/painel/">Acessar o painel</a>
     '''
-
-    def enviar():
-        try:
-            resend.api_key = settings.RESEND_API_KEY
-            resend.Emails.send({
-                "from": "Aquawoman <onboarding@resend.dev>",
-                "to": [settings.EMAIL_DESTINATARIO],
-                "subject": f"🛒 Novo pedido #{pedido.id} — Aquawoman",
-                "html": html,
-            })
-        except Exception as e:
-            print(f"Erro ao enviar email: {e}")
-
-    thread = threading.Thread(target=enviar)
-    thread.daemon = True
-    thread.start()
 
     def enviar():
         try:
@@ -181,7 +168,10 @@ def checkout(request):
         'carrinho': carrinho,
         'total': carrinho.total(),
         'cliente': cliente,
+        'cliente_lat': str(cliente.latitude).replace(',', '.') if cliente.latitude else '-6.066532',
+        'cliente_lng': str(cliente.longitude).replace(',', '.') if cliente.longitude else '-49.866094',
     }
+
     return render(request, 'pedidos/checkout.html', context)
 
 def confirmacao(request, pedido_id):
@@ -238,3 +228,11 @@ def pedido_status(request, pedido_id):
         'pedido': pedido,
         'progress_steps': get_progress_steps(pedido.status),
     })
+
+def geocodificar(request):
+    q = request.GET.get('q', '')
+    url = 'https://nominatim.openstreetmap.org/search?format=json&q=' + urllib.parse.quote(q) + '&limit=1'
+    req = urllib.request.Request(url, headers={'User-Agent': 'Aquawoman/1.0'})
+    with urllib.request.urlopen(req) as r:
+        data = json.loads(r.read())
+    return JsonResponse(data, safe=False)
