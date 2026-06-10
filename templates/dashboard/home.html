@@ -87,7 +87,13 @@
               <td class="py-2 text-right font-semibold text-[#1A3FAA]">R$ {{ pedido.total }}</td>
               <td class="py-2 text-right">
                 {% if pedido.forma_recebimento == 'entrega' and pedido.endereco %}
-                <button onclick="abrirMapa('{{ pedido.id }}', '{{ pedido.nome }}', '{{ pedido.endereco|escapejs }}')"
+                <button
+                  data-pedido-id="{{ pedido.id }}"
+                  data-pedido-nome="{{ pedido.nome }}"
+                  data-pedido-endereco="{{ pedido.endereco|escapejs }}"
+                  data-cliente-lat="{% if pedido.cliente and pedido.cliente.latitude %}{{ pedido.cliente.latitude }}{% endif %}"
+                  data-cliente-lng="{% if pedido.cliente and pedido.cliente.longitude %}{{ pedido.cliente.longitude }}{% endif %}"
+                  onclick="abrirMapaBtn(this)"
                   class="text-xs border border-gray-200 rounded-lg px-2 py-1 hover:bg-gray-50 transition inline-flex items-center gap-1">
                   <i class="ti ti-map-pin text-xs" aria-hidden="true"></i> Mapa
                 </button>
@@ -127,7 +133,7 @@
 
 </div>
 
-<!-- Modal mapa -->
+<!-- Modal mapa (com coordenadas) -->
 <div id="modal-mapa" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4); z-index:9999; align-items:center; justify-content:center;">
   <div style="background:white; border-radius:16px; width:90%; max-width:560px; overflow:hidden; box-shadow:0 20px 60px rgba(0,0,0,0.2);">
     <div style="padding:14px 16px; border-bottom:1px solid #f3f4f6; display:flex; justify-content:space-between; align-items:center;">
@@ -155,17 +161,66 @@
   </div>
 </div>
 
+<!-- Modal sem pin (só endereço) -->
+<div id="modal-sem-pin" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4); z-index:9999; align-items:center; justify-content:center;">
+  <div style="background:white; border-radius:16px; width:90%; max-width:420px; overflow:hidden; box-shadow:0 20px 60px rgba(0,0,0,0.2);">
+    <div style="padding:14px 16px; border-bottom:1px solid #f3f4f6; display:flex; justify-content:space-between; align-items:center;">
+      <div>
+        <p id="modal-sem-pin-titulo" style="font-size:14px; font-weight:500; color:#1f2937; margin:0;"></p>
+        <p style="font-size:12px; color:#6b7280; margin:2px 0 0;">Endereço digitado — sem pin no mapa</p>
+      </div>
+      <button onclick="document.getElementById('modal-sem-pin').style.display='none'" style="background:none; border:none; cursor:pointer; color:#9ca3af; font-size:20px;">✕</button>
+    </div>
+    <div style="padding:20px 16px; display:flex; flex-direction:column; gap:12px;">
+      <div style="background:#f9fafb; border-radius:10px; padding:14px 16px; display:flex; align-items:center; gap:12px;">
+        <i class="ti ti-map-pin" style="font-size:20px; color:#29AADF; flex-shrink:0;"></i>
+        <div>
+          <p style="font-size:11px; color:#9ca3af; margin:0 0 2px;">Endereço de entrega</p>
+          <p id="modal-sem-pin-endereco" style="font-size:13px; font-weight:500; color:#1f2937; margin:0;"></p>
+        </div>
+      </div>
+      <a id="modal-sem-pin-gmaps" href="#" target="_blank" style="display:flex; align-items:center; justify-content:center; gap:8px; background:#29AADF; color:white; padding:12px; border-radius:10px; text-decoration:none; font-size:14px; font-weight:500;">
+        <i class="ti ti-brand-google-maps" style="font-size:16px;"></i>
+        Abrir rota no Google Maps
+      </a>
+      <p style="font-size:11px; color:#9ca3af; text-align:center; margin:0;">Cliente não marcou no mapa — navegação pelo endereço</p>
+    </div>
+  </div>
+</div>
+
 <script>
 var mapaPainel = null;
 var LOJA_LAT = -6.066532;
 var LOJA_LNG = -49.866094;
 
-function abrirMapa(pedidoId, nome, endereco) {
+function abrirMapaBtn(btn) {
+  var id = btn.dataset.pedidoId;
+  var nome = btn.dataset.pedidoNome;
+  var endereco = btn.dataset.pedidoEndereco.replace(/\\u000D|\\u000A|\n|\r/g, ' ').trim();
+  var lat = btn.dataset.clienteLat || null;
+  var lng = btn.dataset.clienteLng || null;
+  abrirMapa(id, nome, endereco, lat, lng);
+}
+
+function abrirMapa(pedidoId, nome, endereco, clienteLat, clienteLng) {
+  if (clienteLat) clienteLat = parseFloat(String(clienteLat).replace(',', '.'));
+  if (clienteLng) clienteLng = parseFloat(String(clienteLng).replace(',', '.'));
+
+  document.getElementById('modal-distancia').textContent = '—';
+  document.getElementById('modal-tempo').textContent = '—';
+
+  if (!clienteLat || !clienteLng || isNaN(clienteLat) || isNaN(clienteLng)) {
+    document.getElementById('modal-sem-pin-titulo').textContent = 'Pedido #' + pedidoId + ' — ' + nome;
+    document.getElementById('modal-sem-pin-endereco').textContent = endereco;
+    document.getElementById('modal-sem-pin-gmaps').href =
+      'https://www.google.com/maps/dir/' + LOJA_LAT + ',' + LOJA_LNG + '/' + encodeURIComponent(endereco);
+    document.getElementById('modal-sem-pin').style.display = 'flex';
+    return;
+  }
+
   document.getElementById('modal-mapa').style.display = 'flex';
   document.getElementById('modal-titulo').textContent = 'Pedido #' + pedidoId + ' — ' + nome;
   document.getElementById('modal-endereco').textContent = endereco;
-  document.getElementById('modal-distancia').textContent = '—';
-  document.getElementById('modal-tempo').textContent = '—';
 
   setTimeout(function() {
     if (mapaPainel) { mapaPainel.remove(); mapaPainel = null; }
@@ -186,39 +241,25 @@ function abrirMapa(pedidoId, nome, endereco) {
     });
 
     L.marker([LOJA_LAT, LOJA_LNG], {icon: lojaIcon}).addTo(mapaPainel).bindPopup('Aquawoman');
+    L.marker([clienteLat, clienteLng], {icon: clienteIcon}).addTo(mapaPainel).bindPopup('Cliente');
 
-    fetch('https://nominatim.openstreetmap.org/search?format=json&q=' + encodeURIComponent(endereco + ', Parauapebas, Pará'))
+    var bounds = L.latLngBounds([[LOJA_LAT, LOJA_LNG], [clienteLat, clienteLng]]);
+    mapaPainel.fitBounds(bounds, {padding: [40, 40]});
+
+    fetch('https://router.project-osrm.org/route/v1/driving/' + LOJA_LNG + ',' + LOJA_LAT + ';' + clienteLng + ',' + clienteLat + '?overview=full&geometries=geojson')
       .then(function(r) { return r.json(); })
-      .then(function(data) {
-        if (data && data.length > 0) {
-          var lat = parseFloat(data[0].lat);
-          var lng = parseFloat(data[0].lon);
-
-          L.marker([lat, lng], {icon: clienteIcon}).addTo(mapaPainel).bindPopup('Cliente');
-
-          var bounds = L.latLngBounds([[LOJA_LAT, LOJA_LNG], [lat, lng]]);
-          mapaPainel.fitBounds(bounds, {padding: [40, 40]});
-
-          // Rota real via OSRM
-          fetch('https://router.project-osrm.org/route/v1/driving/' + LOJA_LNG + ',' + LOJA_LAT + ';' + lng + ',' + lat + '?overview=full&geometries=geojson')
-            .then(function(r) { return r.json(); })
-            .then(function(routeData) {
-              if (routeData.routes && routeData.routes.length > 0) {
-                var route = routeData.routes[0];
-                var km = (route.distance / 1000).toFixed(1);
-                var min = Math.round(route.duration / 60);
-                document.getElementById('modal-distancia').textContent = km + ' km';
-                document.getElementById('modal-tempo').textContent = '~' + min + ' min';
-                L.geoJSON(route.geometry, {
-                  style: { color: '#29AADF', weight: 4, opacity: 0.8 }
-                }).addTo(mapaPainel);
-
-                // Link Google Maps
-                document.getElementById('modal-gmaps').href = 
-                  'https://www.google.com/maps/dir/' + LOJA_LAT + ',' + LOJA_LNG + '/' + lat + ',' + lng;
-                  
-              }
-            });
+      .then(function(routeData) {
+        if (routeData.routes && routeData.routes.length > 0) {
+          var route = routeData.routes[0];
+          var km = (route.distance / 1000).toFixed(1);
+          var min = Math.round(route.duration / 60);
+          document.getElementById('modal-distancia').textContent = km + ' km';
+          document.getElementById('modal-tempo').textContent = '~' + min + ' min';
+          L.geoJSON(route.geometry, {
+            style: { color: '#29AADF', weight: 4, opacity: 0.8 }
+          }).addTo(mapaPainel);
+          document.getElementById('modal-gmaps').href =
+            'https://www.google.com/maps/dir/' + LOJA_LAT + ',' + LOJA_LNG + '/' + clienteLat + ',' + clienteLng;
         }
       });
   }, 100);
