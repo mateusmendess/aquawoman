@@ -64,7 +64,11 @@
         <!-- Endereço de entrega -->
         <div class="mb-4" id="campo-endereco">
           <label class="text-xs text-gray-500 mb-1 block">Endereço de entrega</label>
-          <div id="mapa-checkout" style="height: 220px; border-radius: 8px; border: 1px solid #e5e7eb; margin-bottom: 8px; z-index: 0;"></div>
+          <div id="mapa-checkout"
+            data-lat="{{ cliente_lat }}"
+            data-lng="{{ cliente_lng }}"
+            data-tem-localizacao="{% if cliente.latitude and cliente.longitude %}1{% else %}0{% endif %}"
+            style="height: 220px; border-radius: 8px; border: 1px solid #e5e7eb; margin-bottom: 8px; z-index: 0;"></div>
           <p class="text-xs text-gray-400 mb-2">
             <i class="ti ti-info-circle" style="font-size:13px; vertical-align:-2px;" aria-hidden="true"></i>
             Clique no mapa para definir o local, ou digite o bairro e pressione Enter
@@ -163,16 +167,18 @@ var markerCheckout = null;
 
 function iniciarMapaCheckout() {
   if (mapaCheckout) return;
-  var mapaLat = {{ cliente_lat }}, mapaLng = {{ cliente_lng }};
+  var mapaDiv = document.getElementById('mapa-checkout');
+  var mapaLat = parseFloat(mapaDiv.dataset.lat);
+  var mapaLng = parseFloat(mapaDiv.dataset.lng);
   mapaCheckout = L.map('mapa-checkout').setView([mapaLat, mapaLng], 14);
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '© OpenStreetMap'
   }).addTo(mapaCheckout);
 
   // Se cliente já tem localização, mostra o pin
-  {% if cliente.latitude and cliente.longitude %}
-  markerCheckout = L.marker([{{ cliente_lat }}, {{ cliente_lng }}]).addTo(mapaCheckout);
-  {% endif %}
+  if (mapaDiv.dataset.temLocalizacao === '1') {
+  markerCheckout = L.marker([mapaLat, mapaLng]).addTo(mapaCheckout);
+  }
 
   mapaCheckout.on('click', function(e) {
     var latlng = e.latlng;
