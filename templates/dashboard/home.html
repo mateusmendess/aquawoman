@@ -189,14 +189,27 @@ function abrirMapa(pedidoId, nome, endereco) {
         if (data && data.length > 0) {
           var lat = parseFloat(data[0].lat);
           var lng = parseFloat(data[0].lon);
+
           L.marker([lat, lng], {icon: clienteIcon}).addTo(mapaPainel).bindPopup('Cliente');
+
           var bounds = L.latLngBounds([[LOJA_LAT, LOJA_LNG], [lat, lng]]);
           mapaPainel.fitBounds(bounds, {padding: [40, 40]});
-          var dist = mapaPainel.distance([LOJA_LAT, LOJA_LNG], [lat, lng]);
-          var km = (dist / 1000).toFixed(1);
-          var min = Math.round(dist / 1000 / 30 * 60);
-          document.getElementById('modal-distancia').textContent = km + ' km';
-          document.getElementById('modal-tempo').textContent = '~' + min + ' min';
+
+          // Rota real via OSRM
+          fetch('https://router.project-osrm.org/route/v1/driving/' + LOJA_LNG + ',' + LOJA_LAT + ';' + lng + ',' + lat + '?overview=full&geometries=geojson')
+            .then(function(r) { return r.json(); })
+            .then(function(routeData) {
+              if (routeData.routes && routeData.routes.length > 0) {
+                var route = routeData.routes[0];
+                var km = (route.distance / 1000).toFixed(1);
+                var min = Math.round(route.duration / 60);
+                document.getElementById('modal-distancia').textContent = km + ' km';
+                document.getElementById('modal-tempo').textContent = '~' + min + ' min';
+                L.geoJSON(route.geometry, {
+                  style: { color: '#29AADF', weight: 4, opacity: 0.8 }
+                }).addTo(mapaPainel);
+              }
+            });
         }
       });
   }, 100);
