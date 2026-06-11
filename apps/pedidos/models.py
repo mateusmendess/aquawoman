@@ -30,6 +30,8 @@ class Pedido(models.Model):
     forma_recebimento = models.CharField(max_length=20, choices=RECEBIMENTO_CHOICES, default='entrega')
     forma_pagamento = models.CharField(max_length=20, choices=PAGAMENTO_CHOICES, default='dinheiro')
     total = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
     criado_em = models.DateTimeField(auto_now_add=True)
     atualizado_em = models.DateTimeField(auto_now=True)
     cliente = models.ForeignKey(          

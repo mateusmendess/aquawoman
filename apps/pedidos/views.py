@@ -140,6 +140,8 @@ def checkout(request):
             forma_pagamento=forma_pagamento,
             total=carrinho.total(),
             cliente_id=request.session.get('cliente_id'),
+            latitude=cliente.latitude,
+            longitude=cliente.longitude,
         )
 
         for item in carrinho:
