@@ -3,8 +3,8 @@
 {% for item in carrinho %}
 <div class="flex items-center gap-4 p-4 border-b border-gray-50 last:border-0">
   <div class="w-16 h-16 bg-blue-50 rounded-xl flex items-center justify-center text-3xl flex-shrink-0 overflow-hidden">
-  {% if item.produto.imagem %}
-    <img src="{{ item.produto.imagem.url }}" alt="{{ item.produto.nome }}" class="w-full h-full object-cover rounded-xl">
+  {% if item.produto.foto %}
+    <img src="{{ item.produto.foto.url }}" alt="{{ item.produto.nome }}" class="w-full h-full object-cover rounded-xl">
   {% else %}
     {{ item.produto.categoria.icone }}
   {% endif %}
