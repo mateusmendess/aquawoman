@@ -122,6 +122,17 @@ def checkout(request):
 
         forma_recebimento = tipo_entrega  # 'entrega' ou 'retirada'
 
+        if forma_recebimento == 'entrega' and not endereco.strip():
+            messages.error(request, 'Por favor, informe o endereço de entrega.')
+            context = {
+                'carrinho': carrinho,
+                'total': carrinho.total(),
+                'cliente': cliente,
+                'cliente_lat': str(cliente.latitude).replace(',', '.') if cliente.latitude else '-6.066532',
+                'cliente_lng': str(cliente.longitude).replace(',', '.') if cliente.longitude else '-49.866094',
+            }
+            return render(request, 'pedidos/checkout.html', context)
+
         if pagamento == 'online':
             # Identifica se é pix ou cartão online
             forma_pagamento_selecionada = request.POST.get('forma_pagamento_tipo', 'pix')
