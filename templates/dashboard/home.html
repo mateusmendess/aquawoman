@@ -64,24 +64,24 @@
               <td class="py-2 pr-3 text-gray-500 text-xs">{{ pedido.get_forma_recebimento_display }}</td>
               <td class="py-2 pr-3 text-gray-500 text-xs">{{ pedido.get_forma_pagamento_display }}</td>
               <td class="py-2 pr-3">
-                <select
-                  hx-post="{% url 'dashboard:atualizar_status' pedido.id %}"
-                  hx-target="this"
-                  hx-swap="outerHTML"
-                  hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
-                  name="status"
-                  class="text-xs border border-gray-200 rounded-lg px-2 py-1 cursor-pointer
-                    {% if pedido.status == 'pendente' %}bg-yellow-50 text-yellow-700
-                    {% elif pedido.status == 'confirmado' %}bg-blue-50 text-blue-700
-                    {% elif pedido.status == 'em_entrega' %}bg-purple-50 text-purple-700
-                    {% elif pedido.status == 'entregue' %}bg-green-50 text-green-700
-                    {% else %}bg-red-50 text-red-700{% endif %}">
-                  <option value="pendente" {% if pedido.status == 'pendente' %}selected{% endif %}>Pendente</option>
-                  <option value="confirmado" {% if pedido.status == 'confirmado' %}selected{% endif %}>Confirmado</option>
-                  <option value="em_entrega" {% if pedido.status == 'em_entrega' %}selected{% endif %}>Em entrega</option>
-                  <option value="entregue" {% if pedido.status == 'entregue' %}selected{% endif %}>Entregue</option>
-                  <option value="cancelado" {% if pedido.status == 'cancelado' %}selected{% endif %}>Cancelado</option>
-                </select>
+                <form method="POST" action="{% url 'dashboard:atualizar_status' pedido.id %}">
+                  {% csrf_token %}
+                  <select
+                    name="status"
+                    onchange="this.form.submit()"
+                    class="text-xs border border-gray-200 rounded-lg px-2 py-1 cursor-pointer
+                      {% if pedido.status == 'pendente' %}bg-yellow-50 text-yellow-700
+                      {% elif pedido.status == 'confirmado' %}bg-blue-50 text-blue-700
+                      {% elif pedido.status == 'em_entrega' %}bg-purple-50 text-purple-700
+                      {% elif pedido.status == 'entregue' %}bg-green-50 text-green-700
+                      {% else %}bg-red-50 text-red-700{% endif %}">
+                    <option value="pendente" {% if pedido.status == 'pendente' %}selected{% endif %}>Pendente</option>
+                    <option value="confirmado" {% if pedido.status == 'confirmado' %}selected{% endif %}>Confirmado</option>
+                    <option value="em_entrega" {% if pedido.status == 'em_entrega' %}selected{% endif %}>Em entrega</option>
+                    <option value="entregue" {% if pedido.status == 'entregue' %}selected{% endif %}>Entregue</option>
+                    <option value="cancelado" {% if pedido.status == 'cancelado' %}selected{% endif %}>Cancelado</option>
+                  </select>
+                </form>
               </td>
               <td class="py-2 pr-3 text-right font-semibold text-[#1A3FAA]">R$ {{ pedido.total }}</td>
               <td class="py-2 text-right">
