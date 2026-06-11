@@ -17,13 +17,13 @@ def dashboard_home(request):
     estoque_baixo = Produto.objects.filter(estoque__lte=10, ativo=True)
 
     context = {
-    'pedidos_hoje': pedidos_hoje,
-    'pedidos_recentes': pedidos_recentes,
-    'total_hoje': total_hoje,
-    'estoque_baixo': estoque_baixo,
-    'total_pedidos': Pedido.objects.count(),
-    'quantidade_hoje': quantidade_hoje,
-}
+        'pedidos_hoje': pedidos_hoje,
+        'pedidos_recentes': pedidos_recentes,
+        'total_hoje': total_hoje,
+        'estoque_baixo': estoque_baixo,
+        'total_pedidos': Pedido.objects.count(),
+        'quantidade_hoje': quantidade_hoje,
+    }
     
     return render(request, 'dashboard/home.html', context)
 
