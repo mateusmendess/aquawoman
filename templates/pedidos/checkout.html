@@ -256,10 +256,7 @@ function iniciarMapaCheckout() {
           if (data && data.length > 0) {
             var lat = parseFloat(data[0].lat);
             var lng = parseFloat(data[0].lon);
-            if (markerCheckout) { markerCheckout.setLatLng([lat, lng]); }
-            else { markerCheckout = L.marker([lat, lng]).addTo(mapaCheckout); }
             mapaCheckout.setView([lat, lng], 16);
-            atualizarBadgePin(true);
           }
         })
         .catch(function() {});
