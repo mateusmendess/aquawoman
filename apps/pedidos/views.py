@@ -152,10 +152,6 @@ def checkout(request):
 
         carrinho.limpar()
 
-        # Atualiza endereço do cliente se foi entrega
-        if forma_recebimento == 'entrega' and endereco:
-            Cliente.objects.filter(id=request.session['cliente_id']).update(endereco=endereco)
-
         if pagamento == 'online':
             return redirect(f'/pagamento/criar/{pedido.id}/')
 
