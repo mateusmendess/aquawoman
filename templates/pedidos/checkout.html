@@ -73,6 +73,19 @@
             <i class="ti ti-info-circle" style="font-size:13px; vertical-align:-2px;" aria-hidden="true"></i>
             Clique no mapa para definir o local, ou digite o bairro e pressione Enter
           </p>
+          <div id="pin-badge" style="display:none; margin-bottom:8px;">
+            <span style="display:inline-flex; align-items:center; gap:6px; background:#EAF3DE; color:#3B6D11; font-size:11px; font-weight:500; padding:4px 10px; border-radius:20px;">
+              <i class="ti ti-map-pin" style="font-size:13px;" aria-hidden="true"></i>
+              Local marcado no mapa
+              <button type="button" onclick="removerPin()" style="background:none; border:none; cursor:pointer; color:#3B6D11; font-size:11px; padding:0; margin-left:4px;">✕ remover</button>
+            </span>
+          </div>
+          <div id="no-pin-badge" style="margin-bottom:8px;">
+            <span style="display:inline-flex; align-items:center; gap:6px; background:#f3f4f6; color:#6b7280; font-size:11px; padding:4px 10px; border-radius:20px;">
+              <i class="ti ti-map-pin-off" style="font-size:13px;" aria-hidden="true"></i>
+              Sem pin — entrega pelo endereço digitado
+            </span>
+          </div>
           <textarea name="endereco" id="input-endereco" rows="3"
             class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"
             placeholder="Rua, número, bairro, cidade">{{ cliente.endereco }}</textarea>
@@ -164,6 +177,24 @@
 var mapaCheckout = null;
 var markerCheckout = null;
 
+function atualizarBadgePin(temPin) {
+  document.getElementById('pin-badge').style.display = temPin ? 'block' : 'none';
+  document.getElementById('no-pin-badge').style.display = temPin ? 'none' : 'block';
+}
+
+function removerPin() {
+  if (markerCheckout) {
+    mapaCheckout.removeLayer(markerCheckout);
+    markerCheckout = null;
+  }
+  fetch('/salvar-localizacao/', {
+    method: 'POST',
+    headers: {'X-CSRFToken': '{{ csrf_token }}', 'Content-Type': 'application/json'},
+    body: JSON.stringify({lat: null, lng: null})
+  });
+  atualizarBadgePin(false);
+}
+
 function iniciarMapaCheckout() {
   if (mapaCheckout) return;
   var mapaDiv = document.getElementById('mapa-checkout');
@@ -174,9 +205,11 @@ function iniciarMapaCheckout() {
     attribution: '© OpenStreetMap'
   }).addTo(mapaCheckout);
 
-  // Se cliente já tem localização, mostra o pin
   if (mapaDiv.dataset.temLocalizacao === '1') {
-  markerCheckout = L.marker([mapaLat, mapaLng]).addTo(mapaCheckout);
+    markerCheckout = L.marker([mapaLat, mapaLng]).addTo(mapaCheckout);
+    atualizarBadgePin(true);
+  } else {
+    atualizarBadgePin(false);
   }
 
   mapaCheckout.on('click', function(e) {
@@ -195,6 +228,8 @@ function iniciarMapaCheckout() {
       headers: {'X-CSRFToken': '{{ csrf_token }}', 'Content-Type': 'application/json'},
       body: JSON.stringify({lat: latlng.lat, lng: latlng.lng})
     });
+
+    atualizarBadgePin(true);
   });
 
   document.getElementById('input-endereco').addEventListener('keydown', function(e) {
@@ -211,6 +246,7 @@ function iniciarMapaCheckout() {
             if (markerCheckout) { markerCheckout.setLatLng([lat, lng]); }
             else { markerCheckout = L.marker([lat, lng]).addTo(mapaCheckout); }
             mapaCheckout.setView([lat, lng], 16);
+            atualizarBadgePin(true);
           }
         })
         .catch(function() {});
@@ -283,7 +319,6 @@ function selecionarRecebimento(el, tipo) {
     }, 100);
   }
 }
-
 
 function selecionarPagamento(el, tipo) {
   document.querySelectorAll('.ck-pay').forEach(p => p.classList.remove('active'));
