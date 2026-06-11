@@ -1,1 +1,1 @@
-web: python manage.py migrate && python manage.py collectstatic --noinput && gunicorn core.wsgi --log-file -
+echo "web: python manage.py wait_for_db && python manage.py migrate && python manage.py collectstatic --noinput && gunicorn core.wsgi --log-file -" > Procfile
