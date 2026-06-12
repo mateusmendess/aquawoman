@@ -77,8 +77,8 @@
                       {% else %}bg-red-50 text-red-700{% endif %}">
                     <option value="pendente" {% if pedido.status == 'pendente' %}selected{% endif %}>Pendente</option>
                     <option value="confirmado" {% if pedido.status == 'confirmado' %}selected{% endif %}>Confirmado</option>
-                    <option value="em_entrega" {% if pedido.status == 'em_entrega' %}selected{% endif %}>Em entrega</option>
-                    <option value="entregue" {% if pedido.status == 'entregue' %}selected{% endif %}>Entregue</option>
+                    <option value="em_entrega" {% if pedido.status == 'em_entrega' %}selected{% endif %}>{% if pedido.forma_recebimento == 'retirada' %}Pronto para retirar{% else %}Em entrega{% endif %}</option>
+                    <option value="entregue" {% if pedido.status == 'entregue' %}selected{% endif %}>{% if pedido.forma_recebimento == 'retirada' %}Retirado{% else %}Entregue{% endif %}</option>
                     <option value="cancelado" {% if pedido.status == 'cancelado' %}selected{% endif %}>Cancelado</option>
                   </select>
                 </form>
