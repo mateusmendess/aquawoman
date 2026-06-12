@@ -15,7 +15,13 @@
       {% elif pedido.status == 'em_entrega' %}bg-purple-100 text-purple-700
       {% elif pedido.status == 'entregue' %}bg-green-100 text-green-700
       {% else %}bg-red-100 text-red-700{% endif %}">
-      {{ pedido.get_status_display }}
+      {% if pedido.status == 'em_entrega' %}
+        {% if pedido.forma_recebimento == 'retirada' %}Pronto para retirar{% else %}Em entrega{% endif %}
+      {% elif pedido.status == 'entregue' %}
+        {% if pedido.forma_recebimento == 'retirada' %}Retirado{% else %}Entregue{% endif %}
+      {% else %}
+        {{ pedido.get_status_display }}
+      {% endif %}
     </span>
   </div>
 

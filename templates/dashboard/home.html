@@ -69,6 +69,7 @@
                   <select
                     name="status"
                     onchange="this.form.submit()"
+                    style="width: auto;"
                     class="text-xs border border-gray-200 rounded-lg px-2 py-1 cursor-pointer
                       {% if pedido.status == 'pendente' %}bg-yellow-50 text-yellow-700
                       {% elif pedido.status == 'confirmado' %}bg-blue-50 text-blue-700
