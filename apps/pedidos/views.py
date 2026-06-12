@@ -187,7 +187,7 @@ def confirmacao(request, pedido_id):
     pedido = get_object_or_404(Pedido, id=pedido_id)
     return render(request, 'pedidos/confirmacao.html', {'pedido': pedido})
 
-def get_progress_steps(status):
+def get_progress_steps(status, forma_recebimento='entrega'):
     ordem = ['pendente', 'confirmado', 'em_entrega', 'entregue']
     icones = {
         'pendente': 'clock',
@@ -195,12 +195,20 @@ def get_progress_steps(status):
         'em_entrega': 'truck',
         'entregue': 'home',
     }
-    labels = {
-        'pendente': 'Pendente',
-        'confirmado': 'Confirmado',
-        'em_entrega': 'Em entrega',
-        'entregue': 'Entregue',
-    }
+    if forma_recebimento == 'retirada':
+        labels = {
+            'pendente': 'Pendente',
+            'confirmado': 'Confirmado',
+            'em_entrega': 'Pronto para retirar',
+            'entregue': 'Retirado',
+        }
+    else:
+        labels = {
+            'pendente': 'Pendente',
+            'confirmado': 'Confirmado',
+            'em_entrega': 'Em entrega',
+            'entregue': 'Entregue',
+        }
     try:
         idx_atual = ordem.index(status)
     except ValueError:
@@ -222,7 +230,7 @@ def meus_pedidos(request):
     cliente_id = request.session.get('cliente_id')
     pedidos = Pedido.objects.filter(cliente_id=cliente_id).order_by('-criado_em')
     pedidos_com_steps = [
-        {'pedido': p, 'progress_steps': get_progress_steps(p.status)}
+        {'pedido': p, 'progress_steps': get_progress_steps(p.status, p.forma_recebimento)}
         for p in pedidos
     ]
     return render(request, 'pedidos/meus_pedidos.html', {
@@ -235,7 +243,7 @@ def pedido_status(request, pedido_id):
     pedido = get_object_or_404(Pedido, id=pedido_id, cliente_id=cliente_id)
     return render(request, 'pedidos/partials/pedido_card.html', {
         'pedido': pedido,
-        'progress_steps': get_progress_steps(pedido.status),
+        'progress_steps': get_progress_steps(pedido.status, pedido.forma_recebimento),
     })
 
 def geocodificar(request):
