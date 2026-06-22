@@ -6,7 +6,7 @@
     <h2 class="text-base font-semibold text-gray-700 mb-4">{{ grupo.categoria.icone }} {{ grupo.categoria.nome }}</h2>
     <div class="flex flex-wrap gap-4">
       {% for produto in grupo.produtos %}
-      <div class="bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition p-4 relative flex flex-col" style="min-width: 180px; flex: 1; max-width: 260px;">
+      <div class="bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition p-4 relative flex flex-col w-[calc(50%-8px)] md:w-auto md:flex-1 md:max-w-[260px]">
         {% if produto.destaque %}
         <span class="absolute -top-3 right-3 bg-yellow-400 text-white text-xs px-2 py-0.5 rounded-full shadow-sm">⭐ Destaque</span>
         {% endif %}
@@ -39,7 +39,7 @@
 {% else %}
   <div class="flex flex-wrap gap-4">
     {% for produto in produtos %}
-    <div class="bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition p-4 relative flex flex-col" style="min-width: 180px; flex: 1; max-width: 260px;">
+    <div class="bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition p-4 relative flex flex-col w-[calc(50%-8px)] md:w-auto md:flex-1 md:max-w-[260px]">
       {% if produto.destaque %}
       <span class="absolute -top-3 right-3 bg-yellow-400 text-white text-xs px-2 py-0.5 rounded-full shadow-sm">⭐ Destaque</span>
       {% endif %}
