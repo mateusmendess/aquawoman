@@ -52,14 +52,15 @@
   <nav class="bg-[#29AADF] shadow-md">
     <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
       <a href="/" class="flex items-center gap-3">
-        <img src="https://i.imgur.com/zcuKAhS.png"
-             alt="Aquawoman" class="h-16 object-contain">
+        <img src="https://i.imgur.com/zcuKAhS.png" alt="Aquawoman" class="h-16 object-contain">
         <div class="flex flex-col leading-tight">
           <span class="font-bold text-white text-lg tracking-wide" style="font-family: Georgia, serif;">AQUAWOMAN</span>
           <span class="text-white text-xs opacity-80">limpeza e descartáveis</span>
         </div>
       </a>
-      <div class="flex items-center gap-6">
+
+      <!-- Desktop -->
+      <div class="hidden md:flex items-center gap-6">
         <a href="/" class="text-white text-sm opacity-90 hover:opacity-100 {% if request.path == '/' %}border-b-2 border-white pb-1{% endif %}">Início</a>
         <a href="/produtos/" class="text-white text-sm opacity-90 hover:opacity-100 {% if request.path == '/produtos/' %}border-b-2 border-white pb-1{% endif %}">Produtos</a>
         <a href="/meus-pedidos/" class="text-white text-sm opacity-90 hover:opacity-100 {% if request.path == '/meus-pedidos/' %}border-b-2 border-white pb-1{% endif %}">Meus Pedidos</a>
@@ -84,8 +85,49 @@
           </span>
         </a>
       </div>
+
+      <!-- Mobile -->
+      <div class="flex md:hidden items-center gap-3">
+        <a href="/carrinho" class="bg-[#1A3FAA] text-white text-sm px-3 py-2 rounded-lg flex items-center gap-1 relative hover:bg-blue-900 transition">
+          <i class="ti ti-shopping-cart text-base"></i>
+          <span id="carrinho-contador-mobile" class="absolute -top-2 -right-2 bg-white text-[#1A3FAA] text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">
+            {{ quantidade_carrinho|default:0 }}
+          </span>
+        </a>
+        <button onclick="toggleMenu()" class="text-white p-2">
+          <i class="ti ti-menu-2 text-2xl"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Menu mobile -->
+    <div id="mobile-menu" class="hidden md:hidden bg-[#1A3FAA] px-4 pb-4">
+      <a href="/" class="block text-white text-sm py-3 border-b border-white/10 {% if request.path == '/' %}font-medium{% else %}opacity-80{% endif %}">Início</a>
+      <a href="/produtos/" class="block text-white text-sm py-3 border-b border-white/10 {% if request.path == '/produtos/' %}font-medium{% else %}opacity-80{% endif %}">Produtos</a>
+      <a href="/meus-pedidos/" class="block text-white text-sm py-3 border-b border-white/10 {% if request.path == '/meus-pedidos/' %}font-medium{% else %}opacity-80{% endif %}">Meus Pedidos</a>
+      {% if request.session.cliente_id %}
+      <a href="/minha-conta/" class="block text-white text-sm py-3 border-b border-white/10 {% if request.path == '/minha-conta/' %}font-medium{% else %}opacity-80{% endif %}">
+        <i class="ti ti-user text-base align-middle"></i> {{ request.session.cliente_nome }}
+      </a>
+      {% else %}
+      <a href="/login/" class="block text-white text-sm py-3 border-b border-white/10 opacity-80">
+        <i class="ti ti-user text-base align-middle"></i> Entrar
+      </a>
+      {% endif %}
+      {% if request.user.is_staff %}
+      <a href="/painel/" class="block text-white text-sm py-3 opacity-80">
+        <i class="ti ti-layout-dashboard text-base align-middle"></i> Painel
+      </a>
+      {% endif %}
     </div>
   </nav>
+
+  <script>
+  function toggleMenu() {
+    var menu = document.getElementById('mobile-menu');
+    menu.classList.toggle('hidden');
+  }
+  </script>
 
   {% if messages %}
   {% for message in messages %}
