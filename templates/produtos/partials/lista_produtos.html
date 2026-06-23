@@ -21,6 +21,7 @@
         <p class="text-xs text-gray-400 mb-2">{{ produto.descricao }}</p>
         <div class="mt-auto pt-2">
           <p class="text-[#1A3FAA] font-semibold mb-2">R$ {{ produto.preco|floatformat:2 }}</p>
+          {% if produto.estoque > 0 %}
           <button
             hx-post="{% url 'pedidos:carrinho_adicionar' produto.id %}"
             hx-target="#carrinho-contador"
@@ -29,6 +30,12 @@
             class="w-full bg-[#29AADF] text-white text-xs px-3 py-1.5 rounded-lg hover:bg-[#1A3FAA] transition">
             + Carrinho
           </button>
+          {% else %}
+          <button disabled
+            class="w-full bg-gray-200 text-gray-400 text-xs px-3 py-1.5 rounded-lg cursor-not-allowed">
+            Indisponível
+          </button>
+          {% endif %}
         </div>
       </div>
       {% endfor %}
@@ -54,6 +61,7 @@
       <p class="text-xs text-gray-400 mb-2">{{ produto.descricao }}</p>
       <div class="mt-auto pt-2">
         <p class="text-[#1A3FAA] font-semibold mb-2">R$ {{ produto.preco|floatformat:2 }}</p>
+        {% if produto.estoque > 0 %}
         <button
           hx-post="{% url 'pedidos:carrinho_adicionar' produto.id %}"
           hx-target="#carrinho-contador"
@@ -62,6 +70,12 @@
           class="w-full bg-[#29AADF] text-white text-xs px-3 py-1.5 rounded-lg hover:bg-[#1A3FAA] transition">
           + Carrinho
         </button>
+        {% else %}
+        <button disabled
+          class="w-full bg-gray-200 text-gray-400 text-xs px-3 py-1.5 rounded-lg cursor-not-allowed">
+          Indisponível
+        </button>
+        {% endif %}
       </div>
     </div>
     {% empty %}

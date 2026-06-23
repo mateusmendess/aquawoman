@@ -30,6 +30,14 @@ def atualizar_status(request, pedido_id):
     pedido = get_object_or_404(Pedido, id=pedido_id)
     novo_status = request.POST.get('status')
     if novo_status in dict(Pedido.STATUS_CHOICES):
+        status_anterior = pedido.status
         pedido.status = novo_status
         pedido.save()
+
+        if novo_status == 'entregue' and status_anterior != 'entregue':
+            for item in pedido.itens.all():
+                produto = item.produto
+                produto.estoque = max(0, produto.estoque - item.quantidade)
+                produto.save()
+
     return redirect('dashboard:home')
