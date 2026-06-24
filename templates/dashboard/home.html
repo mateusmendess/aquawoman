@@ -119,6 +119,46 @@
           </tbody>
         </table>
       </div>
+
+      <!-- Paginação -->
+      {% if pedidos_recentes.paginator.num_pages > 1 %}
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-top:16px; padding-top:14px; border-top:0.5px solid #f3f4f6;">
+        <p style="font-size:11px; color:#9ca3af; margin:0;">
+          Mostrando {{ pedidos_recentes.start_index }}–{{ pedidos_recentes.end_index }} de {{ pedidos_recentes.paginator.count }} pedidos
+        </p>
+        <div style="display:flex; align-items:center; gap:4px;">
+
+          {% if pedidos_recentes.has_previous %}
+          <a href="?page={{ pedidos_recentes.previous_page_number }}"
+            style="display:inline-flex; align-items:center; justify-content:center; height:30px; padding:0 10px; border-radius:8px; border:0.5px solid #e5e7eb; font-size:12px; color:#6b7280; text-decoration:none; background:white;">
+            <i class="ti ti-chevron-left" style="font-size:12px;" aria-hidden="true"></i>
+          </a>
+          {% endif %}
+
+          {% for num in pedidos_recentes.paginator.page_range %}
+            {% if pedidos_recentes.number == num %}
+            <span style="display:inline-flex; align-items:center; justify-content:center; width:30px; height:30px; border-radius:8px; background:#1A3FAA; color:white; font-size:12px;">{{ num }}</span>
+            {% elif num == 1 or num == pedidos_recentes.paginator.num_pages or num >= pedidos_recentes.number|add:"-2" and num <= pedidos_recentes.number|add:"2" %}
+            <a href="?page={{ num }}"
+              style="display:inline-flex; align-items:center; justify-content:center; width:30px; height:30px; border-radius:8px; border:0.5px solid #e5e7eb; font-size:12px; color:#374151; text-decoration:none; background:white;">
+              {{ num }}
+            </a>
+            {% elif num == pedidos_recentes.number|add:"-3" or num == pedidos_recentes.number|add:"3" %}
+            <span style="font-size:12px; color:#9ca3af; padding:0 4px;">...</span>
+            {% endif %}
+          {% endfor %}
+
+          {% if pedidos_recentes.has_next %}
+          <a href="?page={{ pedidos_recentes.next_page_number }}"
+            style="display:inline-flex; align-items:center; justify-content:center; height:30px; padding:0 10px; border-radius:8px; border:0.5px solid #e5e7eb; font-size:12px; color:#6b7280; text-decoration:none; background:white;">
+            <i class="ti ti-chevron-right" style="font-size:12px;" aria-hidden="true"></i>
+          </a>
+          {% endif %}
+
+        </div>
+      </div>
+      {% endif %}
+
     </div>
 
     <!-- Estoque baixo -->

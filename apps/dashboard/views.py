@@ -4,6 +4,8 @@ from apps.pedidos.models import Pedido
 from apps.produtos.models import Produto
 from django.utils import timezone
 from django.db.models import Sum
+from django.core.paginator import Paginator
+
 
 @staff_member_required
 def dashboard_home(request):
@@ -41,3 +43,28 @@ def atualizar_status(request, pedido_id):
                 produto.save()
 
     return redirect('dashboard:home')
+
+@staff_member_required
+def dashboard_home(request):
+    hoje = timezone.now().date()
+
+    pedidos_hoje = Pedido.objects.filter(criado_em__date=hoje, status='entregue')
+    quantidade_hoje = Pedido.objects.filter(criado_em__date=hoje).count()
+    total_hoje = pedidos_hoje.aggregate(total=Sum('total'))['total'] or 0
+    estoque_baixo = Produto.objects.filter(estoque__lte=10, ativo=True)
+
+    todos_pedidos = Pedido.objects.all().order_by('-criado_em')
+    paginator = Paginator(todos_pedidos, 10)
+    page_number = request.GET.get('page', 1)
+    pedidos_recentes = paginator.get_page(page_number)
+
+    context = {
+        'pedidos_hoje': pedidos_hoje,
+        'pedidos_recentes': pedidos_recentes,
+        'total_hoje': total_hoje,
+        'estoque_baixo': estoque_baixo,
+        'total_pedidos': Pedido.objects.count(),
+        'quantidade_hoje': quantidade_hoje,
+        'paginator': paginator,
+    }
+    return render(request, 'dashboard/home.html', context)
