@@ -58,7 +58,7 @@
           </thead>
           <tbody>
             {% for pedido in pedidos_recentes %}
-            <tr class="border-b border-gray-50 hover:bg-gray-50 transition">
+            <tr class="border-b-0 hover:bg-gray-50 transition">
               <td class="py-2 pr-3 text-gray-400 text-xs">#{{ pedido.id }}</td>
               <td class="py-2 pr-3 font-medium text-gray-800">{{ pedido.nome }}</td>
               <td class="py-2 pr-3 text-gray-500 text-xs">{{ pedido.get_forma_recebimento_display }}</td>
@@ -98,6 +98,17 @@
                   <i class="ti ti-map-pin text-xs" aria-hidden="true"></i> Mapa
                 </button>
                 {% endif %}
+              </td>
+            </tr>
+            <tr class="border-b border-gray-50">
+              <td></td>
+              <td colspan="6" class="pb-2 pt-0">
+                {% for item in pedido.itens.all %}
+                <span style="display:inline-flex; align-items:center; gap:4px; background:#f3f4f6; border:0.5px solid #e5e7eb; border-radius:20px; padding:2px 8px; font-size:10px; color:#6b7280; margin-right:4px; margin-top:2px;">
+                  <i class="ti ti-shopping-bag" style="font-size:10px;" aria-hidden="true"></i>
+                  {{ item.produto.nome }} x{{ item.quantidade }}
+                </span>
+                {% endfor %}
               </td>
             </tr>
             {% empty %}
