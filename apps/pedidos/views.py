@@ -35,12 +35,15 @@ def carrinho_adicionar(request, produto_id):
     carrinho = Carrinho(request)
     produto = get_object_or_404(Produto, id=produto_id)
     carrinho.adicionar(produto)
-    return HttpResponse(f'''
+    quantidade = len(carrinho)
+    response = HttpResponse(f'''
         <span id="carrinho-contador"
               class="absolute -top-2 -right-2 bg-white text-[#1A3FAA] text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">
-            {len(carrinho)}
+            {quantidade}
         </span>
     ''')
+    response['HX-Trigger'] = f'{{"atualizarContador": "{quantidade}"}}'
+    return response
 
 def carrinho_remover(request, produto_id):
     carrinho = Carrinho(request)
@@ -60,10 +63,13 @@ def carrinho_atualizar(request, produto_id):
         carrinho.salvar()
     else:
         carrinho.remover(produto)
-    return render(request, 'pedidos/partials/itens_carrinho.html', {
+    quantidade_total = len(carrinho)
+    response = render(request, 'pedidos/partials/itens_carrinho.html', {
         'carrinho': carrinho,
         'total': carrinho.total(),
     })
+    response['HX-Trigger'] = f'{{"atualizarContador": "{quantidade_total}"}}'
+    return response
 
 def enviar_email_pedido(pedido):
     itens_texto = ''

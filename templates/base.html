@@ -145,14 +145,27 @@
   </main>
 
   <footer class="bg-[#1A3FAA] mt-12">
-    <div class="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
-      <span class="text-white text-xs opacity-80">
-        <i class="ti ti-truck text-sm align-middle"></i> Fazemos entregas
-      </span>
-      <span class="text-[#9FE1CB] text-xs">© 2026 Aquawoman · Limpeza e Descartáveis</span>
-      <span class="text-white text-xs opacity-80">
-        <i class="ti ti-brand-whatsapp text-sm align-middle"></i> 94 984000463
-      </span>
+    <div class="max-w-6xl mx-auto px-4 py-4">
+      <!-- Desktop -->
+      <div class="hidden md:flex justify-between items-center">
+        <span class="text-white text-xs opacity-80">
+          <i class="ti ti-truck text-sm align-middle"></i> Fazemos entregas
+        </span>
+        <span class="text-[#9FE1CB] text-xs">© 2026 Aquawoman · Limpeza e Descartáveis</span>
+        <span class="text-white text-xs opacity-80">
+          <i class="ti ti-brand-whatsapp text-sm align-middle"></i> 94 984000463
+        </span>
+      </div>
+      <!-- Mobile -->
+      <div class="flex md:hidden flex-col items-center gap-2 text-center">
+        <span class="text-white text-xs opacity-80">
+          <i class="ti ti-truck text-sm align-middle"></i> Fazemos entregas
+        </span>
+        <span class="text-[#9FE1CB] text-xs">© 2026 Aquawoman · Limpeza e Descartáveis</span>
+        <span class="text-white text-xs opacity-80">
+          <i class="ti ti-brand-whatsapp text-sm align-middle"></i> 94 984000463
+        </span>
+      </div>
     </div>
   </footer>
 
@@ -164,7 +177,19 @@
   </div>
 
   <script src="{% static 'js/main.js' %}?v=5"></script>
+
+  <script>
+  document.body.addEventListener('atualizarContador', function(e) {
+    var qtd = e.detail.value;
+    var c1 = document.getElementById('carrinho-contador');
+    var c2 = document.getElementById('carrinho-contador-mobile');
+    if (c1) c1.textContent = qtd;
+    if (c2) c2.textContent = qtd;
+  });
+  </script>
+
   {% block extra_js %}{% endblock %}
+
   <script>
   document.body.addEventListener('htmx:afterRequest', function(e) {
     if (e.detail.requestConfig && e.detail.requestConfig.path && e.detail.requestConfig.path.includes('adicionar')) {
