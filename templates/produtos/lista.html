@@ -22,26 +22,26 @@
   </div>
 
   <!-- Categorias -->
-  <div class="flex gap-2 flex-wrap mb-6">
-    <button
-      hx-get="/produtos/"
-      hx-target="#lista-produtos"
-      hx-swap="innerHTML"
-      onclick="setAtivo(this)"
-      class="cat-btn bg-[#29AADF] text-white text-sm px-4 py-2 rounded-full">
-      Todos
-    </button>
-    {% for categoria in categorias %}
-    <button
-      hx-get="/produtos/?categoria={{ categoria.slug }}"
-      hx-target="#lista-produtos"
-      hx-swap="innerHTML"
-      onclick="setAtivo(this)"
-      class="cat-btn border border-[#29AADF] text-[#1A3FAA] text-sm px-4 py-2 rounded-full hover:bg-[#29AADF] hover:text-white transition">
-      {{ categoria.icone }} {{ categoria.nome }}
-    </button>
-    {% endfor %}
-  </div>
+  <div class="grid grid-cols-2 md:flex md:flex-wrap gap-2 mb-6">
+  <button
+    hx-get="/produtos/"
+    hx-target="#lista-produtos"
+    hx-swap="innerHTML"
+    onclick="setAtivo(this)"
+    class="cat-btn bg-[#29AADF] text-white text-xs md:text-sm px-4 py-2 rounded-full flex items-center justify-center">
+    Todos
+  </button>
+  {% for categoria in categorias %}
+  <button
+    hx-get="/produtos/?categoria={{ categoria.slug }}"
+    hx-target="#lista-produtos"
+    hx-swap="innerHTML"
+    onclick="setAtivo(this)"
+    class="cat-btn border border-[#29AADF] text-[#1A3FAA] text-xs md:text-sm px-4 py-2 rounded-full hover:bg-[#29AADF] hover:text-white transition flex items-center justify-center">
+    {{ categoria.icone }} {{ categoria.nome }}
+  </button>
+  {% endfor %}
+</div>
 
   <!-- Lista de produtos -->
   <h2 class="text-lg font-semibold mb-4 text-gray-700">🛒 Produtos</h2>

@@ -43,7 +43,9 @@
     <!-- Pedidos recentes -->
     <div class="md:col-span-2 bg-white rounded-2xl border border-gray-100 p-6">
       <h2 class="text-sm font-semibold text-gray-700 mb-4">📦 Pedidos recentes</h2>
-      <div class="overflow-x-auto">
+
+      <!-- Tabela desktop -->
+      <div class="hidden md:block overflow-x-auto">
         <table class="w-full text-sm">
           <thead>
             <tr class="border-b border-gray-100">
@@ -66,10 +68,7 @@
               <td class="py-2 pr-3">
                 <form method="POST" action="{% url 'dashboard:atualizar_status' pedido.id %}">
                   {% csrf_token %}
-                  <select
-                    name="status"
-                    onchange="this.form.submit()"
-                    style="width: 130px;"
+                  <select name="status" onchange="this.form.submit()" style="width:130px;"
                     class="text-xs border border-gray-200 rounded-lg px-2 py-1 cursor-pointer
                       {% if pedido.status == 'pendente' %}bg-yellow-50 text-yellow-700
                       {% elif pedido.status == 'confirmado' %}bg-blue-50 text-blue-700
@@ -120,6 +119,61 @@
         </table>
       </div>
 
+      <!-- Cards mobile -->
+      <div class="md:hidden">
+        {% for pedido in pedidos_recentes %}
+        <div class="border border-gray-100 rounded-xl p-3 mb-3">
+          <div class="flex justify-between items-start mb-2">
+            <div>
+              <p class="text-xs font-semibold text-gray-800">#{{ pedido.id }} — {{ pedido.nome }}</p>
+              <p class="text-xs text-gray-400">{{ pedido.get_forma_recebimento_display }} · {{ pedido.get_forma_pagamento_display }}</p>
+            </div>
+            <span class="text-sm font-bold text-[#1A3FAA]">R$ {{ pedido.total }}</span>
+          </div>
+          <div class="mb-2">
+            {% for item in pedido.itens.all %}
+            <span style="display:inline-flex; align-items:center; gap:4px; background:#f3f4f6; border:0.5px solid #e5e7eb; border-radius:20px; padding:2px 8px; font-size:10px; color:#6b7280; margin-right:4px; margin-top:2px;">
+              <i class="ti ti-shopping-bag" style="font-size:10px;" aria-hidden="true"></i>
+              {{ item.produto.nome }} x{{ item.quantidade }}
+            </span>
+            {% endfor %}
+          </div>
+          <div class="flex items-center justify-between mt-2">
+            <form method="POST" action="{% url 'dashboard:atualizar_status' pedido.id %}">
+              {% csrf_token %}
+              <select name="status" onchange="this.form.submit()"
+                class="text-xs border border-gray-200 rounded-lg px-2 py-1 cursor-pointer
+                  {% if pedido.status == 'pendente' %}bg-yellow-50 text-yellow-700
+                  {% elif pedido.status == 'confirmado' %}bg-blue-50 text-blue-700
+                  {% elif pedido.status == 'em_entrega' %}bg-purple-50 text-purple-700
+                  {% elif pedido.status == 'entregue' %}bg-green-50 text-green-700
+                  {% else %}bg-red-50 text-red-700{% endif %}">
+                <option value="pendente" {% if pedido.status == 'pendente' %}selected{% endif %}>Pendente</option>
+                <option value="confirmado" {% if pedido.status == 'confirmado' %}selected{% endif %}>Confirmado</option>
+                <option value="em_entrega" {% if pedido.status == 'em_entrega' %}selected{% endif %}>{% if pedido.forma_recebimento == 'retirada' %}Pronto para retirar{% else %}Em entrega{% endif %}</option>
+                <option value="entregue" {% if pedido.status == 'entregue' %}selected{% endif %}>{% if pedido.forma_recebimento == 'retirada' %}Retirado{% else %}Entregue{% endif %}</option>
+                <option value="cancelado" {% if pedido.status == 'cancelado' %}selected{% endif %}>Cancelado</option>
+              </select>
+            </form>
+            {% if pedido.forma_recebimento == 'entrega' and pedido.endereco %}
+            <button
+              data-pedido-id="{{ pedido.id }}"
+              data-pedido-nome="{{ pedido.nome }}"
+              data-pedido-endereco="{{ pedido.endereco|escapejs }}"
+              data-cliente-lat="{% if pedido.latitude %}{{ pedido.latitude }}{% endif %}"
+              data-cliente-lng="{% if pedido.longitude %}{{ pedido.longitude }}{% endif %}"
+              onclick="abrirMapaBtn(this)"
+              class="text-xs border border-gray-200 rounded-lg px-2 py-1 hover:bg-gray-50 transition inline-flex items-center gap-1">
+              <i class="ti ti-map-pin text-xs" aria-hidden="true"></i> Mapa
+            </button>
+            {% endif %}
+          </div>
+        </div>
+        {% empty %}
+        <p class="py-8 text-center text-gray-400 text-sm">Nenhum pedido ainda.</p>
+        {% endfor %}
+      </div>
+
       <!-- Paginação -->
       {% if pedidos_recentes.paginator.num_pages > 1 %}
       <div style="display:flex; align-items:center; justify-content:space-between; margin-top:16px; padding-top:14px; border-top:0.5px solid #f3f4f6;">
@@ -127,14 +181,12 @@
           Mostrando {{ pedidos_recentes.start_index }}–{{ pedidos_recentes.end_index }} de {{ pedidos_recentes.paginator.count }} pedidos
         </p>
         <div style="display:flex; align-items:center; gap:4px;">
-
           {% if pedidos_recentes.has_previous %}
           <a href="?page={{ pedidos_recentes.previous_page_number }}"
             style="display:inline-flex; align-items:center; justify-content:center; height:30px; padding:0 10px; border-radius:8px; border:0.5px solid #e5e7eb; font-size:12px; color:#6b7280; text-decoration:none; background:white;">
             <i class="ti ti-chevron-left" style="font-size:12px;" aria-hidden="true"></i>
           </a>
           {% endif %}
-
           {% for num in pedidos_recentes.paginator.page_range %}
             {% if pedidos_recentes.number == num %}
             <span style="display:inline-flex; align-items:center; justify-content:center; width:30px; height:30px; border-radius:8px; background:#1A3FAA; color:white; font-size:12px;">{{ num }}</span>
@@ -147,14 +199,12 @@
             <span style="font-size:12px; color:#9ca3af; padding:0 4px;">...</span>
             {% endif %}
           {% endfor %}
-
           {% if pedidos_recentes.has_next %}
           <a href="?page={{ pedidos_recentes.next_page_number }}"
             style="display:inline-flex; align-items:center; justify-content:center; height:30px; padding:0 10px; border-radius:8px; border:0.5px solid #e5e7eb; font-size:12px; color:#6b7280; text-decoration:none; background:white;">
             <i class="ti ti-chevron-right" style="font-size:12px;" aria-hidden="true"></i>
           </a>
           {% endif %}
-
         </div>
       </div>
       {% endif %}

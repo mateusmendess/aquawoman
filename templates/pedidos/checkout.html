@@ -62,7 +62,6 @@
         </div>
 
         <!-- Endereço de entrega -->
-        
         <div class="mb-4" id="campo-endereco">
           <label class="text-xs text-gray-500 mb-1 block">Endereço de entrega</label>
           <textarea name="endereco" id="input-endereco" rows="3"
@@ -110,6 +109,7 @@
             Como chegar — Google Maps
           </a>
         </div>
+
         <!-- Como quer pagar -->
         <div class="mb-4">
           <label class="text-xs text-gray-500 mb-2 block">Como quer pagar?</label>
@@ -133,7 +133,7 @@
         </div>
 
         <!-- Quando pagar -->
-        <div class="mb-4 hidden" id="quando-pagar">
+        <div class="mb-2 hidden" id="quando-pagar">
           <label class="text-xs text-gray-500 mb-2 block">Quando quer pagar?</label>
           <div class="grid grid-cols-2 gap-2">
             <div class="ck-when active" onclick="selecionarQuando(this, 'agora')">
@@ -148,12 +148,15 @@
             </div>
           </div>
         </div>
+        <p class="text-xs text-gray-400 text-center mt-3 mb-4" id="info-btn">Você paga em dinheiro na hora da entrega</p>
 
-        <button type="button" id="btn-confirmar" onclick="confirmarPedido()"
-          class="w-full bg-[#29AADF] text-white py-3 rounded-xl font-medium hover:bg-[#1A3FAA] transition">
-          Confirmar pedido →
-        </button>
-        <p class="text-xs text-gray-400 text-center mt-2" id="info-btn">Você paga em dinheiro na hora da entrega</p>
+        <!-- Botão visível só no desktop -->
+        <div class="hidden md:block">
+          <button type="button" id="btn-confirmar" onclick="confirmarPedido()"
+            class="w-full bg-[#29AADF] text-white py-3 rounded-xl font-medium hover:bg-[#1A3FAA] transition">
+            Confirmar pedido →
+          </button>
+        </div>
 
       </form>
     </div>
@@ -174,6 +177,14 @@
         <div class="flex justify-between items-center pt-3 mt-2">
           <span class="text-sm font-semibold text-gray-700">Total</span>
           <span class="text-lg font-bold text-[#1A3FAA]">R$ {{ total|floatformat:2 }}</span>
+        </div>
+
+        <!-- Botão visível só no mobile -->
+        <div class="md:hidden mt-4">
+          <button type="button" id="btn-confirmar-mobile" onclick="confirmarPedido()"
+            class="w-full bg-[#29AADF] text-white py-3 rounded-xl font-medium hover:bg-[#1A3FAA] transition">
+            Confirmar pedido →
+          </button>
         </div>
       </div>
       <a href="/carrinho" class="block text-center text-sm text-[#29AADF] hover:underline">
@@ -306,39 +317,54 @@ var tipoPagamento = 'dinheiro';
 var tipoQuando = 'depois';
 
 function atualizarBotaoCheckout() {
-  const btn = document.getElementById('btn-confirmar');
+  const btns = [
+    document.getElementById('btn-confirmar'),
+    document.getElementById('btn-confirmar-mobile')
+  ];
   const info = document.getElementById('info-btn');
-  if (!btn || !info) return;
   const local = tipoRecebimento === 'entrega' ? 'na entrega' : 'na retirada';
   const acao = tipoRecebimento === 'entrega' ? 'Confirmar pedido →' : 'Confirmar retirada →';
-  if (tipoPagamento === 'dinheiro') {
-    btn.textContent = acao;
-    btn.className = 'w-full bg-[#29AADF] text-white py-3 rounded-xl font-medium hover:bg-[#1A3FAA] transition';
-    info.textContent = `Você paga em dinheiro ${local}`;
-    document.getElementById('input-pagamento').value = 'entrega';
-  } else if (tipoPagamento === 'pix') {
-    if (tipoQuando === 'agora') {
-      btn.textContent = 'Pagar agora via Pix →';
-      btn.className = 'w-full bg-[#009EE3] text-white py-3 rounded-xl font-medium hover:bg-[#007EB5] transition';
-      info.textContent = 'Você será redirecionado para pagar via Pix agora';
-      document.getElementById('input-pagamento').value = 'online';
-    } else {
+
+  btns.forEach(function(btn) {
+    if (!btn) return;
+    if (tipoPagamento === 'dinheiro') {
       btn.textContent = acao;
       btn.className = 'w-full bg-[#29AADF] text-white py-3 rounded-xl font-medium hover:bg-[#1A3FAA] transition';
-      info.textContent = `Você paga via Pix ${local}`;
       document.getElementById('input-pagamento').value = 'entrega';
+    } else if (tipoPagamento === 'pix') {
+      if (tipoQuando === 'agora') {
+        btn.textContent = 'Pagar agora via Pix →';
+        btn.className = 'w-full bg-[#009EE3] text-white py-3 rounded-xl font-medium hover:bg-[#007EB5] transition';
+        document.getElementById('input-pagamento').value = 'online';
+      } else {
+        btn.textContent = acao;
+        btn.className = 'w-full bg-[#29AADF] text-white py-3 rounded-xl font-medium hover:bg-[#1A3FAA] transition';
+        document.getElementById('input-pagamento').value = 'entrega';
+      }
+    } else if (tipoPagamento === 'cartao') {
+      if (tipoQuando === 'agora') {
+        btn.textContent = 'Pagar agora com Cartão →';
+        btn.className = 'w-full bg-[#009EE3] text-white py-3 rounded-xl font-medium hover:bg-[#007EB5] transition';
+        document.getElementById('input-pagamento').value = 'online';
+      } else {
+        btn.textContent = acao;
+        btn.className = 'w-full bg-[#29AADF] text-white py-3 rounded-xl font-medium hover:bg-[#1A3FAA] transition';
+        document.getElementById('input-pagamento').value = 'entrega';
+      }
     }
-  } else if (tipoPagamento === 'cartao') {
-    if (tipoQuando === 'agora') {
-      btn.textContent = 'Pagar agora com Cartão →';
-      btn.className = 'w-full bg-[#009EE3] text-white py-3 rounded-xl font-medium hover:bg-[#007EB5] transition';
-      info.textContent = 'Você será redirecionado para pagar com cartão agora';
-      document.getElementById('input-pagamento').value = 'online';
-    } else {
-      btn.textContent = acao;
-      btn.className = 'w-full bg-[#29AADF] text-white py-3 rounded-xl font-medium hover:bg-[#1A3FAA] transition';
-      info.textContent = `Você paga no cartão ${local}`;
-      document.getElementById('input-pagamento').value = 'entrega';
+  });
+
+  if (info) {
+    if (tipoPagamento === 'dinheiro') {
+      info.textContent = `Você paga em dinheiro ${local}`;
+    } else if (tipoPagamento === 'pix') {
+      info.textContent = tipoQuando === 'agora'
+        ? 'Você será redirecionado para pagar via Pix agora'
+        : `Você paga via Pix ${local}`;
+    } else if (tipoPagamento === 'cartao') {
+      info.textContent = tipoQuando === 'agora'
+        ? 'Você será redirecionado para pagar com cartão agora'
+        : `Você paga no cartão ${local}`;
     }
   }
 }
