@@ -104,9 +104,9 @@ def enviar_email_pedido(pedido):
         except Exception as e:
             print(f"Erro ao enviar email: {e}")
 
-    thread = threading.Thread(target=enviar)
-    thread.daemon = True
-    thread.start()
+        thread = threading.Thread(target=enviar)
+        thread.daemon = True
+        thread.start()
 
 @login_cliente_required
 def checkout(request):
@@ -118,6 +118,12 @@ def checkout(request):
     
     cliente = Cliente.objects.get(id=request.session['cliente_id'])
 
+    # Limpa coordenadas ao entrar no checkout
+    if request.method == 'GET':
+        cliente.latitude = None
+        cliente.longitude = None
+        cliente.save()
+
     if request.method == 'POST':
         nome = request.POST.get('nome')
         telefone = request.POST.get('telefone')
@@ -125,7 +131,7 @@ def checkout(request):
         pagamento = request.POST.get('pagamento')
         tipo_entrega = request.POST.get('tipo_entrega', 'entrega')
 
-        forma_recebimento = tipo_entrega  # 'entrega' ou 'retirada'
+        forma_recebimento = tipo_entrega
 
         if forma_recebimento == 'entrega' and not endereco.strip():
             messages.error(request, 'Por favor, informe o endereço de entrega.')
@@ -139,7 +145,6 @@ def checkout(request):
             return render(request, 'pedidos/checkout.html', context)
 
         if pagamento == 'online':
-            # Identifica se é pix ou cartão online
             forma_pagamento_selecionada = request.POST.get('forma_pagamento_tipo', 'pix')
             if forma_pagamento_selecionada == 'cartao':
                 forma_pagamento = 'cartao_online'
@@ -173,7 +178,6 @@ def checkout(request):
         if pagamento == 'online':
             return redirect(f'/pagamento/criar/{pedido.id}/')
 
-        # Só envia email para pagamento na entrega/retirada
         enviar_email_pedido(pedido)
         messages.success(request, f'Pedido #{pedido.id} realizado com sucesso!')
         return redirect('pedidos:confirmacao', pedido_id=pedido.id)
@@ -182,8 +186,8 @@ def checkout(request):
         'carrinho': carrinho,
         'total': carrinho.total(),
         'cliente': cliente,
-        'cliente_lat': str(cliente.latitude).replace(',', '.') if cliente.latitude else '-6.066532',
-        'cliente_lng': str(cliente.longitude).replace(',', '.') if cliente.longitude else '-49.866094',
+        'cliente_lat': '-6.066532',
+        'cliente_lng': '-49.866094',
     }
 
     return render(request, 'pedidos/checkout.html', context)

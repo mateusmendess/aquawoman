@@ -279,6 +279,19 @@ function iniciarMapaCheckout() {
     atualizarBadgePin(true);
   });
 
+  document.getElementById('input-endereco').addEventListener('input', function() {
+    if (markerCheckout) {
+      mapaCheckout.removeLayer(markerCheckout);
+      markerCheckout = null;
+      fetch('/salvar-localizacao/', {
+        method: 'POST',
+        headers: {'X-CSRFToken': '{{ csrf_token }}', 'Content-Type': 'application/json'},
+        body: JSON.stringify({lat: null, lng: null})
+      });
+      atualizarBadgePin(false);
+    }
+  });
+
   document.getElementById('input-endereco').addEventListener('keydown', function(e) {
     if (e.key === 'Enter') {
       e.preventDefault();
