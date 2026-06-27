@@ -101,12 +101,15 @@ def enviar_email_pedido(pedido):
                 "subject": f"🛒 Novo pedido #{pedido.id} — Aquawoman",
                 "html": html,
             })
+            print(f"Email enviado para pedido #{pedido.id}")
         except Exception as e:
-            print(f"Erro ao enviar email: {e}")
+            print(f"ERRO ao enviar email pedido #{pedido.id}: {e}")
+            import traceback
+            traceback.print_exc()
 
-        thread = threading.Thread(target=enviar)
-        thread.daemon = True
-        thread.start()
+    thread = threading.Thread(target=enviar)
+    thread.daemon = True
+    thread.start()
 
 @login_cliente_required
 def checkout(request):
