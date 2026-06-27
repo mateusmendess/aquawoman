@@ -7,18 +7,28 @@
 <div class="max-w-6xl mx-auto px-4 py-8">
 
   <!-- Busca -->
-  <div class="mb-4">
+  <div class="mb-4 relative">
     <input
       type="text"
       name="busca"
+      id="input-busca"
       value="{{ busca }}"
       placeholder="🔍 Buscar produto..."
       hx-get="/produtos/"
       hx-target="#lista-produtos"
       hx-swap="innerHTML"
       hx-trigger="keyup changed delay:300ms"
-      hx-include="[name='busca']"
-      class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#29AADF] bg-white shadow-sm">
+      hx-include="[name='busca'], .cat-check:checked"
+      oninput="toggleBtnLimpar(this)"
+      class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#29AADF] bg-white shadow-sm pr-10">
+    <button
+      type="button"
+      id="btn-limpar-busca"
+      onclick="limparBusca()"
+      class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition"
+      style="display:none;">
+      <i class="ti ti-x text-sm" aria-hidden="true"></i>
+    </button>
   </div>
 
   <!-- Filtro dropdown -->
@@ -108,6 +118,17 @@ document.addEventListener('click', function(e) {
     document.getElementById('icon-chevron').style.transform = 'rotate(0deg)';
   }
 });
+
+function toggleBtnLimpar(input) {
+  document.getElementById('btn-limpar-busca').style.display = input.value ? 'block' : 'none';
+}
+
+function limparBusca() {
+  var input = document.getElementById('input-busca');
+  input.value = '';
+  document.getElementById('btn-limpar-busca').style.display = 'none';
+  htmx.ajax('GET', '/produtos/', {target: '#lista-produtos', swap: 'innerHTML'});
+}
 </script>
 
 {% endblock %}
