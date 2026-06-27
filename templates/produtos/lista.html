@@ -21,27 +21,38 @@
       class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#29AADF] bg-white shadow-sm">
   </div>
 
-  <!-- Categorias -->
-  <div class="grid grid-cols-2 md:flex md:flex-wrap gap-2 mb-6">
-  <button
-    hx-get="/produtos/"
-    hx-target="#lista-produtos"
-    hx-swap="innerHTML"
-    onclick="setAtivo(this)"
-    class="cat-btn bg-[#29AADF] text-white text-xs md:text-sm px-4 py-2 rounded-full flex items-center justify-center">
-    Todos
-  </button>
-  {% for categoria in categorias %}
-  <button
-    hx-get="/produtos/?categoria={{ categoria.slug }}"
-    hx-target="#lista-produtos"
-    hx-swap="innerHTML"
-    onclick="setAtivo(this)"
-    class="cat-btn border border-[#29AADF] text-[#1A3FAA] text-xs md:text-sm px-4 py-2 rounded-full hover:bg-[#29AADF] hover:text-white transition flex items-center justify-center">
-    {{ categoria.icone }} {{ categoria.nome }}
-  </button>
-  {% endfor %}
-</div>
+  <!-- Filtro dropdown -->
+  <div class="flex items-center gap-2 mb-6 flex-wrap">
+    <div class="relative" id="filtro-wrapper">
+      <button
+        type="button"
+        id="btn-filtro"
+        onclick="toggleFiltro()"
+        class="inline-flex items-center gap-2 border-2 border-[#29AADF] text-[#1A3FAA] text-sm font-medium px-4 py-2 rounded-full transition hover:bg-[#29AADF] hover:text-white">
+        <i class="ti ti-filter text-sm" aria-hidden="true"></i>
+        <span>Todas as categorias</span>
+        <i class="ti ti-chevron-down text-xs" id="icon-chevron" aria-hidden="true"></i>
+      </button>
+
+      <div id="dropdown-categorias"
+        class="hidden absolute top-full left-0 mt-2 bg-white border border-gray-100 rounded-xl shadow-lg z-50 min-w-[240px] p-2 max-h-80 overflow-y-auto">
+        {% for categoria in categorias %}
+        <label class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-gray-700 cursor-pointer hover:bg-[#EFF8FD] hover:text-[#1A3FAA]">
+          <input
+            type="checkbox"
+            value="{{ categoria.slug }}"
+            data-nome="{{ categoria.nome }}"
+            onchange="atualizarFiltros()"
+            class="cat-check accent-[#29AADF] w-4 h-4 cursor-pointer">
+          {{ categoria.nome }}
+        </label>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Tags das categorias selecionadas -->
+    <div id="tags-categorias" class="flex flex-wrap gap-2"></div>
+  </div>
 
   <!-- Lista de produtos -->
   <h2 class="text-lg font-semibold mb-4 text-gray-700">🛒 Produtos</h2>
@@ -50,5 +61,53 @@
   </div>
 
 </div>
+
+<script>
+function toggleFiltro() {
+  var menu = document.getElementById('dropdown-categorias');
+  var icon = document.getElementById('icon-chevron');
+  var aberto = !menu.classList.contains('hidden');
+  menu.classList.toggle('hidden');
+  icon.style.transform = aberto ? 'rotate(0deg)' : 'rotate(180deg)';
+}
+
+function atualizarFiltros() {
+  var checks = document.querySelectorAll('.cat-check:checked');
+  var slugs = Array.from(checks).map(c => c.value);
+  var nomes = Array.from(checks).map(c => c.dataset.nome);
+
+  // Atualiza tags
+  var tagsDiv = document.getElementById('tags-categorias');
+  tagsDiv.innerHTML = '';
+  nomes.forEach(function(nome, i) {
+    var tag = document.createElement('span');
+    tag.className = 'inline-flex items-center gap-2 bg-[#EFF8FD] text-[#1A3FAA] text-xs font-medium px-3 py-1.5 rounded-full border border-[#29AADF]';
+    tag.innerHTML = nome + ' <button type="button" onclick="removerFiltro(\'' + slugs[i] + '\')" class="hover:text-red-500 transition">✕</button>';
+    tagsDiv.appendChild(tag);
+  });
+
+  // Dispara HTMX
+  var url = '/produtos/';
+  if (slugs.length > 0) {
+    url += '?' + slugs.map(s => 'categoria=' + s).join('&');
+  }
+  htmx.ajax('GET', url, {target: '#lista-produtos', swap: 'innerHTML'});
+}
+
+function removerFiltro(slug) {
+  var check = document.querySelector('.cat-check[value="' + slug + '"]');
+  if (check) {
+    check.checked = false;
+    atualizarFiltros();
+  }
+}
+
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('#filtro-wrapper')) {
+    document.getElementById('dropdown-categorias').classList.add('hidden');
+    document.getElementById('icon-chevron').style.transform = 'rotate(0deg)';
+  }
+});
+</script>
 
 {% endblock %}

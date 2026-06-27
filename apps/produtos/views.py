@@ -4,12 +4,20 @@ from apps.pedidos.carrinho import Carrinho
 
 def lista_produtos(request):
     categorias = Categoria.objects.filter(ativo=True)
-    categoria_slug = request.GET.get('categoria')
+    categorias_slugs = request.GET.getlist('categoria')
     busca = request.GET.get('busca', '').strip()
 
-    if categoria_slug:
-        produtos = Produto.objects.filter(ativo=True, categoria__slug=categoria_slug).order_by('-destaque', 'nome')
-        categorias_com_produtos = None
+    if categorias_slugs:
+        produtos = None
+        categorias_com_produtos = []
+        cats_filtradas = categorias.filter(slug__in=categorias_slugs)
+        for categoria in cats_filtradas:
+            prods = Produto.objects.filter(ativo=True, categoria=categoria).order_by('-destaque', 'nome')
+            if prods.exists():
+                categorias_com_produtos.append({
+                    'categoria': categoria,
+                    'produtos': prods,
+                })
     elif busca:
         produtos = Produto.objects.filter(ativo=True, nome__icontains=busca).order_by('-destaque', 'nome')
         categorias_com_produtos = None
@@ -27,7 +35,7 @@ def lista_produtos(request):
     context = {
         'produtos': produtos,
         'categorias': categorias,
-        'categoria_slug': categoria_slug,
+        'categoria_slug': categorias_slugs,
         'busca': busca,
         'categorias_com_produtos': categorias_com_produtos,
     }
