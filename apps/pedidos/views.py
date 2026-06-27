@@ -21,7 +21,6 @@ def login_cliente_required(view_func):
         return view_func(request, *args, **kwargs)
     return wrapper
 
-@login_cliente_required
 def carrinho_detalhe(request):
     carrinho = Carrinho(request)
     context = {
