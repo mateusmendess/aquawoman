@@ -95,25 +95,85 @@
 ```
 aquawoman/
 ├── apps/
-│   ├── clientes/        # Autenticação e perfil do cliente
-│   ├── dashboard/       # Painel administrativo
-│   ├── pagamentos/      # Integração Mercado Pago
-│   ├── pedidos/         # Carrinho, checkout e pedidos
-│   └── produtos/        # Catálogo e categorias
-├── core/                # Settings, URLs e configurações
+│   ├── clientes/               # Autenticação e perfil do cliente
+│   │   ├── migrations/
+│   │   ├── admin.py
+│   │   ├── models.py
+│   │   ├── urls.py
+│   │   └── views.py
+│   ├── dashboard/              # Painel administrativo
+│   │   ├── migrations/
+│   │   ├── admin.py
+│   │   ├── models.py
+│   │   ├── urls.py
+│   │   └── views.py
+│   ├── pagamentos/             # Integração Mercado Pago
+│   │   ├── models.py
+│   │   ├── urls.py
+│   │   └── views.py
+│   ├── pedidos/                # Carrinho, checkout e pedidos
+│   │   ├── management/
+│   │   │   └── commands/
+│   │   │       └── wait_for_db.py
+│   │   ├── migrations/
+│   │   ├── admin.py
+│   │   ├── carrinho.py
+│   │   ├── context_processors.py
+│   │   ├── models.py
+│   │   ├── urls.py
+│   │   └── views.py
+│   └── produtos/               # Catálogo e categorias
+│       ├── migrations/
+│       ├── admin.py
+│       ├── models.py
+│       ├── sitemaps.py
+│       ├── urls.py
+│       └── views.py
+├── core/                       # Settings, URLs e configurações
+│   ├── settings.py
+│   ├── urls.py
+│   ├── asgi.py
+│   └── wsgi.py
 ├── static/
-│   └── js/main.js
+│   ├── css/
+│   ├── img/
+│   │   └── logo.png
+│   └── js/
+│       └── main.js
+├── staticfiles/                # Arquivos estáticos coletados (produção)
 ├── templates/
-│   ├── base.html
-│   ├── home.html
 │   ├── clientes/
+│   │   ├── cadastro.html
+│   │   ├── editar_conta.html
+│   │   ├── login.html
+│   │   └── minha_conta.html
 │   ├── dashboard/
+│   │   └── home.html
+│   ├── partials/
 │   ├── pedidos/
-│   └── produtos/
-├── .env                 # Variáveis de ambiente (não versionado)
+│   │   ├── partials/
+│   │   │   ├── itens_carrinho.html
+│   │   │   └── pedido_card.html
+│   │   ├── carrinho.html
+│   │   ├── checkout.html
+│   │   ├── confirmacao.html
+│   │   └── meus_pedidos.html
+│   ├── produtos/
+│   │   ├── partials/
+│   │   │   └── lista_produtos.html
+│   │   └── lista.html
+│   ├── base.html
+│   └── home.html
+├── .env                        # Variáveis de ambiente (não versionado)
+├── .gitignore
+├── db.sqlite3
 ├── manage.py
+├── mise.toml
+├── Procfile
+├── README.md
 ├── requirements.txt
-└── Procfile
+├── robots.txt
+└── runtime.txt
 ```
 
 ---
