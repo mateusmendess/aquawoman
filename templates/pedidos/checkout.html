@@ -148,7 +148,7 @@
             </div>
           </div>
         </div>
-        <p class="text-xs text-gray-400 text-center mt-3 mb-4" id="info-btn">Você paga em dinheiro na hora da entrega</p>
+        <p class="md:hidden text-xs text-gray-400 text-center mt-3 mb-4" id="info-btn">Você paga em dinheiro na hora da entrega</p>
 
         <!-- Botão visível só no desktop -->
         <div class="hidden md:block">
@@ -156,6 +156,7 @@
             class="w-full bg-[#29AADF] text-white py-3 rounded-xl font-medium hover:bg-[#1A3FAA] transition">
             Confirmar pedido →
           </button>
+          <p class="text-xs text-gray-400 text-center mt-2" id="info-btn-desktop">Você paga em dinheiro na hora da entrega</p>
         </div>
 
       </form>
@@ -341,6 +342,7 @@ function atualizarBotaoCheckout() {
     document.getElementById('btn-confirmar-mobile')
   ];
   const info = document.getElementById('info-btn');
+  const infoDesktop = document.getElementById('info-btn-desktop');
   const local = tipoRecebimento === 'entrega' ? 'na entrega' : 'na retirada';
   const acao = tipoRecebimento === 'entrega' ? 'Confirmar pedido →' : 'Confirmar retirada →';
 
@@ -373,19 +375,21 @@ function atualizarBotaoCheckout() {
     }
   });
 
-  if (info) {
-    if (tipoPagamento === 'dinheiro') {
-      info.textContent = `Você paga em dinheiro ${local}`;
-    } else if (tipoPagamento === 'pix') {
-      info.textContent = tipoQuando === 'agora'
-        ? 'Você será redirecionado para pagar via Pix agora'
-        : `Você paga via Pix ${local}`;
-    } else if (tipoPagamento === 'cartao') {
-      info.textContent = tipoQuando === 'agora'
-        ? 'Você será redirecionado para pagar com cartão agora'
-        : `Você paga no cartão ${local}`;
-    }
+  var texto = '';
+  if (tipoPagamento === 'dinheiro') {
+    texto = `Você paga em dinheiro ${local}`;
+  } else if (tipoPagamento === 'pix') {
+    texto = tipoQuando === 'agora'
+      ? 'Você será redirecionado para pagar via Pix agora'
+      : `Você paga via Pix ${local}`;
+  } else if (tipoPagamento === 'cartao') {
+    texto = tipoQuando === 'agora'
+      ? 'Você será redirecionado para pagar com cartão agora'
+      : `Você paga no cartão ${local}`;
   }
+
+  if (info) info.textContent = texto;
+  if (infoDesktop) infoDesktop.textContent = texto;
 }
 
 function selecionarRecebimento(el, tipo) {
