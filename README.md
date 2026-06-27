@@ -260,3 +260,9 @@ http://localhost:8000
 Feito por **Mateus Mendes**
 
 [![GitHub](https://img.shields.io/badge/GitHub-mateusmendess-181717?style=for-the-badge&logo=github)](https://github.com/mateusmendess)
+
+---
+
+## 📄 Licença
+
+Este projeto está sob a licença [MIT](LICENSE).
