@@ -42,7 +42,8 @@ def baixar_e_subir_cloudinary(url_imagem, slug):
             overwrite=True,
         )
         os.unlink(tmp_path)
-        return resultado.get("public_id")
+        # Retorna só o nome sem a pasta
+        return slug[:50]
     except Exception as e:
         print("Erro ao subir: " + str(e))
         return None
@@ -77,7 +78,7 @@ for i, produto in enumerate(produtos):
         erros += 1
         continue
 
-    produto.foto = public_id
+    produto.foto = "produtos/" + public_id
     produto.save()
     print("  OK")
     sucesso += 1
