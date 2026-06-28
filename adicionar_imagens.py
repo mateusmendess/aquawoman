@@ -37,7 +37,7 @@ def baixar_e_subir_cloudinary(url_imagem, slug):
             tmp_path = f.name
         resultado = cloudinary.uploader.upload(
             tmp_path,
-            folder="produtos",
+            folder="media/produtos",
             public_id=slug[:50],
             overwrite=True,
         )
