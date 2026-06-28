@@ -77,7 +77,7 @@ for i, produto in enumerate(produtos):
         erros += 1
         continue
 
-    produto.foto = public_id + ".jpg"
+    produto.foto = public_id
     produto.save()
     print("  OK")
     sucesso += 1
